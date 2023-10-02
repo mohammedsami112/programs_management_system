@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Permission;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Facades\Auth;
 
 class Controller extends BaseController
 {
@@ -30,5 +32,13 @@ class Controller extends BaseController
         ];
 
         return response()->json($response, $code);
+    }
+
+    public function permission($permission)
+    {
+        $permissionData = Permission::find(Auth::guard('sanctum')->user()->permission);
+        $permissions = explode(',', $permissionData->permissions);
+
+        return in_array($permission, $permissions);
     }
 }

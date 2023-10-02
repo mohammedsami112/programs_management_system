@@ -15,8 +15,8 @@ class authController extends Controller
             'username' => 'required',
             'password' => 'required'
         ], [
-            'username.required' => 'اسم المستخدم مطلوب',
-            'password.required' => 'كلمة السر مطلوبة'
+            'username.required' => 'حقل اسم المستخدم مطلوب',
+            'password.required' => 'حقل كلمة السر مطلوب'
         ]);
 
         if ($validate->fails()) {
