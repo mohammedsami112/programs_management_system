@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\authController;
 use App\Http\Controllers\permissionsController;
+use App\Http\Controllers\usersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -36,5 +37,13 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('update', 'update');
         Route::post('/delete/{permissionsId}', 'delete');
         Route::get('/{permissionId}', 'getPermission');
+    });
+
+    Route::group(['prefix' => 'users', 'controller' => usersController::class], function () {
+        Route::get('/', 'getUsers');
+        Route::post('create', 'create');
+        Route::post('update', 'update');
+        Route::post('/delete/{userId}', 'delete');
+        Route::get('/{userId}', 'getUser');
     });
 });
