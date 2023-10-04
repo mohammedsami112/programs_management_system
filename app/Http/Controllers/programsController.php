@@ -1,0 +1,153 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Program;
+use App\Models\ProgramUsers;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
+class programsController extends Controller
+{
+
+
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            if (!$this->permission('programs_view')) {
+                abort(403);
+            }
+            return $next($request);
+        });
+    }
+
+    // Get Programs
+    public function getPrograms(Request $request)
+    {
+
+        $programs = Program::when($request->trash == true, function ($query) {
+            $query->onlyTrashed();
+        })->when($request->search, function ($query, $search) {
+            $query->where('title', 'LIKE', "%$search%");
+        })->when($request->sort, function ($query, $sort) use ($request) {
+            $column = $request->sort_column ? $request->sort_column : 'id';
+            $query->orderBy($column, $sort);
+        })->paginate($request->limit || 10);
+
+        return $this->sendResponse($programs);
+    }
+
+    // Create Programs
+    public function create(Request $request)
+    {
+
+        if (!$this->permission('programs_create')) {
+            abort(403);
+        }
+
+        $validate = Validator::make($request->all(), [
+            'title' => 'required'
+        ]);
+
+        if ($validate->fails()) {
+            return $this->sendError('Validation Error', $validate->errors(), 400);
+        }
+
+        Program::create([
+            'title' => $request->title,
+        ]);
+
+        return $this->sendResponse(null, 'تم انشاء البرنامج بنجاح');
+    }
+
+    // Update Programs
+    public function update(Request $request)
+    {
+        if (!$this->permission('programs_update')) {
+            abort(403);
+        }
+
+        $validate = Validator::make($request->all(), [
+            'item_id' => 'required|exists:programs,id',
+            'title' => 'required'
+        ]);
+
+        if ($validate->fails()) {
+            return $this->sendError('Validation Error', $validate->errors(), 400);
+        }
+
+        $program = Program::find($request->item_id);
+
+        $program->update([
+            'title' => $request->title
+        ]);
+
+        return $this->sendResponse(null, 'تم تحديث البرمنامج بنجاح');
+    }
+
+    // Delete Programs
+    public function delete($programId)
+    {
+        if (!$this->permission('programs_delete')) {
+            abort(403);
+        }
+
+        $validate = Validator::make(['program_id' => $programId], ['program_id' => 'required|exists:programs,id']);
+
+        if ($validate->fails()) {
+            return $this->sendError('Validation Error', $validate->errors(), 400);
+        }
+
+        $program = Program::find($programId);
+
+        $program->delete();
+
+        return $this->sendResponse(null, 'تم حذف البرنامج بنجاح');
+    }
+
+    // Add Users To Program
+    public function addUsers(Request $request)
+    {
+        if (!$this->permission('programs_add_users')) {
+            abort(403);
+        }
+
+        $validate = Validator::make($request->all(), [
+            'program_id' => 'required|exists:programs,id',
+            'user_id' => 'required|exists:users,id'
+        ]);
+
+        if ($validate->fails()) {
+            return $this->sendError('Validation Error', $validate->errors(), 400);
+        }
+
+        ProgramUsers::create([
+            'program_id' => $request->program_id,
+            'user_id' => $request->user_id
+        ]);
+
+        return $this->sendResponse(null, 'تم اضافة المستخدم بنجاح');
+    }
+
+    // Add Users To Program
+    public function deleteUsers(Request $request)
+    {
+        if (!$this->permission('programs_delete_users')) {
+            abort(403);
+        }
+
+        $validate = Validator::make($request->all(), [
+            'program_id' => 'required|exists:programs,id',
+            'user_id' => 'required|exists:users,id'
+        ]);
+
+        if ($validate->fails()) {
+            return $this->sendError('Validation Error', $validate->errors(), 400);
+        }
+
+        $programUser = ProgramUsers::where('program_id', '=', $request->program_id)->where('user_id', '=', $request->user_id)->first();
+        $programUser->delete();
+
+        return $this->sendResponse(null, 'تم حذف المستخدم بنجاح');
+    }
+}
