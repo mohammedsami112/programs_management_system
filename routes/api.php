@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\authController;
+use App\Http\Controllers\logController;
 use App\Http\Controllers\permissionsController;
 use App\Http\Controllers\programsController;
 use App\Http\Controllers\usersController;
@@ -59,5 +60,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
             Route::post('delete', 'deleteUsers');
         });
         Route::post('/delete/{programId}', 'delete');
+    });
+
+    // Logs
+    Route::group(['prefix' => 'logs', 'controller' => logController::class], function () {
+        Route::post('create', 'create');
     });
 });
