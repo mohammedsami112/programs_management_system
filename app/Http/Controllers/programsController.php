@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Program;
 use App\Models\ProgramUsers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class programsController extends Controller
@@ -32,6 +33,8 @@ class programsController extends Controller
         })->when($request->sort, function ($query, $sort) use ($request) {
             $column = $request->sort_column ? $request->sort_column : 'id';
             $query->orderBy($column, $sort);
+        })->when($this->permission('programs_his_programs') == true, function ($query) {
+            $query->where('creator', '=', Auth::user()->id);
         })->paginate($request->limit || 10);
 
         return $this->sendResponse($programs);
@@ -55,6 +58,7 @@ class programsController extends Controller
 
         Program::create([
             'title' => $request->title,
+            'creator' => Auth::user()->id
         ]);
 
         return $this->sendResponse(null, 'تم انشاء البرنامج بنجاح');

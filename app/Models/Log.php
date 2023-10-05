@@ -12,4 +12,17 @@ class Log extends Model
     protected $table = 'logs';
 
     protected $guarded = [];
+
+    protected $hidden = ['user_id', 'program_id'];
+
+    protected $with = ['program', 'user'];
+
+    public function program()
+    {
+        return $this->hasOne(Program::class, 'id', 'program_id')->select(['id', 'title']);
+    }
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id', 'user_id')->select(['id', 'username']);
+    }
 }

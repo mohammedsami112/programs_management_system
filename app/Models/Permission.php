@@ -13,4 +13,12 @@ class Permission extends Model
     protected $table = 'permissions';
 
     protected $fillable = ['title', 'permissions'];
+
+    protected $appends = ['users_count'];
+
+
+    public function getUsersCountAttribute()
+    {
+        return User::where('permission', '=', $this->id)->count();
+    }
 }

@@ -35,6 +35,8 @@ class usersController extends Controller
         })->when($request->sort, function ($query, $sort) use ($request) {
             $column = $request->sort_column ? $request->sort_column : 'id';
             $query->orderBy($column, $sort);
+        })->when($this->permission('users_his_users') == true, function ($query) {
+            $query->where('leader', '=', Auth::user()->id);
         })->paginate($request->limit || 10);
 
         return $this->sendResponse($users);
