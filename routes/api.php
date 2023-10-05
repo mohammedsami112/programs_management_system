@@ -64,6 +64,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     // Logs
     Route::group(['prefix' => 'logs', 'controller' => logController::class], function () {
-        Route::post('create', 'create');
+        Route::get('/', 'getLogs');
+        Route::post('create', 'create')->withoutMiddleware('auth:sanctum');
     });
 });

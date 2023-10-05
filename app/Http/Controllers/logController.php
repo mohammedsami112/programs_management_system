@@ -8,20 +8,37 @@ use Illuminate\Support\Facades\Validator;
 
 class logController extends Controller
 {
-    public function __construct()
+    // public function __construct()
+    // {
+    //     $this->middleware(function ($request, $next) {
+    //         if (!$this->permission('logs_view')) {
+    //             abort(403);
+    //         }
+    //         return $next($request);
+    //     });
+    // }
+
+    public function getLogs(Request $request)
     {
-        $this->middleware(function ($request, $next) {
-            if (!$this->permission('logs_view')) {
-                abort(403);
-            }
-            return $next($request);
-        });
-    }
-    public function create(Request $request)
-    {
-        if (!$this->permission('logs_create')) {
+        if (!$this->permission('logs_view')) {
             abort(403);
         }
+
+        $logs = Log::when($request->search, function ($query, $search) {
+            $query->where('title', 'LIKE', "%$search%");
+        })->when($request->sort, function ($query, $sort) use ($request) {
+            $column = $request->sort_column ? $request->sort_column : 'id';
+            $query->orderBy($column, $sort);
+        })->paginate($request->limit || 10);
+
+        return $this->sendResponse($logs);
+    }
+
+    public function create(Request $request)
+    {
+        // if (!$this->permission('logs_create')) {
+        //     abort(403);
+        // }
 
         $validate = Validator::make($request->all(), [
             'user_id' => 'required|exists:users,id',
