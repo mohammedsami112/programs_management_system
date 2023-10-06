@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+$transition: 0.3s ease-in-out;
+body {
+	@apply pt-[60px];
+}
+
+/* Start Navbar */
+.navbar {
+	@apply w-full bg-white fixed top-[0px] h-[60px] drop-shadow-lg flex items-center;
+	.navbar-content {
+		@apply container mx-auto px-8 flex flex-row-reverse justify-between;
+		.user {
+			@apply flex items-center flex-row-reverse;
+			.avatar {
+				@apply w-[40px] h-[40px] rounded-full bg-slate-400 ml-3 overflow-hidden;
+				img {
+					@apply w-full h-full;
+				}
+			}
+		}
+	}
+}
+
+/* End Navbar */
+
+/* Start Sidebar */
+.sidebar-content {
+	@apply h-full flex flex-col justify-between;
+	.items {
+		li {
+			a {
+				transition: $transition;
+				@apply flex items-center w-full p-3 rounded-full border-2 border-solid border-transparent mb-2;
+				&.logout {
+					@apply bg-rose-100  text-rose-600  border-rose-400;
+				}
+				i {
+					@apply mr-2;
+				}
+				&:not(.logout):hover {
+					@apply bg-indigo-100;
+				}
+				&.router-link-active {
+					@apply bg-indigo-100  text-indigo-600  border-indigo-400;
+				}
+			}
+		}
+	}
+}
+/* End Sidebar */
