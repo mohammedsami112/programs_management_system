@@ -15,6 +15,16 @@ export const useSidebarStore = defineStore('sidebar-store', {
 						icon: 'pi pi-users',
 						route: 'UsersPage',
 					},
+					{
+						title: 'Programs',
+						icon: 'pi pi-database',
+						route: 'ProgramsPage',
+					},
+					{
+						title: 'Logs',
+						icon: 'pi pi-sliders-v',
+						route: 'LogsPage',
+					},
 				],
 			},
 		},

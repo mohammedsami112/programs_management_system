@@ -2,8 +2,8 @@
 	<header class="navbar">
 		<div class="navbar-content">
 			<div class="user">
-				<div class="avatar"><img src="#" alt="" /></div>
-				<div class="username">mosami</div>
+				<div class="avatar"><img src="#" alt="" v-if="userStore.user.avatar" /></div>
+				<div class="username">{{ userStore.user.name }}</div>
 			</div>
 			<sidebar></sidebar>
 		</div>
@@ -12,4 +12,7 @@
 
 <script setup>
 import sidebar from '@/components/layouts/sidebar.vue';
+import { useUserStore } from '@/stores/user';
+
+const userStore = useUserStore();
 </script>
