@@ -15,8 +15,8 @@ class authController extends Controller
             'username' => 'required',
             'password' => 'required'
         ], [
-            'username.required' => 'حقل اسم المستخدم مطلوب',
-            'password.required' => 'حقل كلمة السر مطلوب'
+            'username.required' => 'Username Is Required',
+            'password.required' => 'Password Is Required'
         ]);
 
         if ($validate->fails()) {
@@ -24,7 +24,7 @@ class authController extends Controller
         }
 
         if (!Auth::attempt(['username' => $request->username, 'password' => $request->password])) {
-            return $this->sendError('Unauthorized', ['error' => 'البريد الالكتروني او كلمة السر غير صحيح'], 401);
+            return $this->sendError('Unauthorized', ['error' => 'Username Or Password Is Invalid'], 401);
         }
 
         $user = Auth::user();
@@ -33,12 +33,12 @@ class authController extends Controller
             'user' => $user,
         ];
 
-        return $this->sendResponse($success, 'تم تسجيل الدخول بنجاح');
+        return $this->sendResponse($success, 'Login Successfully');
     }
 
     public function logout()
     {
         Auth::user()->tokens()->delete();
-        return $this->sendResponse(null, 'تم تسجيل الخروج بنجاح');
+        return $this->sendResponse(null, 'Logout Successfully');
     }
 }
