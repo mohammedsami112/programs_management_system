@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Permission;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,13 +24,25 @@ class usersController extends Controller
         });
     }
 
+    // Users Filters
+    public function usersFilters()
+    {
+        $permissions = Permission::select(['id', 'title'])->get()->makeHidden(['users_count']);
+
+        $data = [
+            'permissions' => $permissions,
+        ];
+
+        return $this->sendResponse($data);
+    }
+
     // Get Users
     public function getUsers(Request $request)
     {
         $users = User::when($request->trash == true, function ($query) {
             $query->onlyTrashed();
         })->when($request->search, function ($query, $search) {
-            $query->where('title', 'LIKE', "%$search%");
+            $query->where('name', 'LIKE', "%$search%")->orWhere('username', 'LIKE', "%$search%")->orWhere('email', 'LIKE', "%$search%");
         })->when($request->permission, function ($query, $permission) {
             $query->where('permission', '=', $permission);
         })->when($request->sort, function ($query, $sort) use ($request) {
