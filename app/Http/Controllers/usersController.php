@@ -93,31 +93,31 @@ class usersController extends Controller
             'permission' => 'required|exists:permissions,id',
         ], [
             // Name
-            'name.required' => 'حقل الاسم مطلوب',
+            'name.required' => 'Name Is Required',
 
             // Username
-            'username.required' => 'حقل اسم المستخدم مطلوب',
-            'username.unique' => 'اسم المستخدم مستخدم من قبل',
+            'username.required' => 'Username Is Required',
+            'username.unique' => 'Username Already Exists',
 
             // Avatar
-            'avatar.mimes' => 'امتداد الصورة يجب ان يكون :mimes',
+            'avatar.mimes' => 'Avatar Type Should Be :mimes',
 
             // Email
-            'email.required' => 'حقل البريد الالكتروني مطلوب',
-            'email.unique' => 'البريد الالكتروني مستخدم من قبل',
+            'email.required' => 'Email Is Required',
+            'email.unique' => 'Email Already Exists',
 
             // Password
-            'password.required' => 'حقل كلمة السر مطلوب',
+            'password.required' => 'Password Is Required',
 
             // Country
-            'country.required' => 'حقل البلد مطلوب',
+            'country.required' => 'Country Is Required',
 
             // City
-            'city.required' => 'حقل المدينة مطلوب',
+            'city.required' => 'City Is Required',
 
             // Permissions
-            'permission.required' => 'حقل الصلحيات مطلوب',
-            'permission.exists' => 'الصلحية المختارة غير موجودة',
+            'permission.required' => 'Permission Is Required',
+            'permission.exists' => "Permission Does't Exist",
         ]);
 
         if ($validate->fails()) {
@@ -142,7 +142,7 @@ class usersController extends Controller
             'leader' => Auth::user()->id
         ]);
 
-        return $this->sendResponse(null, 'تم انشاء المسخدم بنجاح',);
+        return $this->sendResponse(null, 'User Created Successfully',);
     }
 
     // Update Users
@@ -165,34 +165,36 @@ class usersController extends Controller
             'permission' => 'required|exists:permissions,id',
         ], [
             // Item Id
-            'item_id.exists' => 'المستخدم غير موجود',
+            'item_id.exists' => "User Doesn't Exist",
+
 
             // Name
-            'name.required' => 'حقل الاسم مطلوب',
+            'name.required' => 'Name Is Required',
 
             // Username
-            'username.required' => 'حقل اسم المستخدم مطلوب',
-            'username.unique' => 'اسم المستخدم مستخدم من قبل',
+            'username.required' => 'Username Is Required',
+            'username.unique' => 'Username Already Exists',
 
             // Avatar
-            'avatar.mimes' => 'امتداد الصورة يجب ان يكون :mimes',
+            'avatar.mimes' => 'Avatar Type Should Be :mimes',
 
             // Email
-            'email.required' => 'حقل البريد الالكتروني مطلوب',
-            'email.unique' => 'البريد الالكتروني مستخدم من قبل',
+            'email.required' => 'Email Is Required',
+            'email.unique' => 'Email Already Exists',
 
             // Password
-            'password.required' => 'حقل كلمة السر مطلوب',
+            'password.required' => 'Password Is Required',
 
             // Country
-            'country.required' => 'حقل البلد مطلوب',
+            'country.required' => 'Country Is Required',
 
             // City
-            'city.required' => 'حقل المدينة مطلوب',
+            'city.required' => 'City Is Required',
 
             // Permissions
-            'permission.required' => 'حقل الصلحيات مطلوب',
-            'permission.exists' => 'الصلحية المختارة غير موجودة',
+            'permission.required' => 'Permission Is Required',
+            'permission.exists' => "Permission Does't Exist",
+
         ]);
 
         if ($validate->fails()) {
@@ -222,7 +224,7 @@ class usersController extends Controller
             'permission' => $request->permission,
         ]);
 
-        return $this->sendResponse(null, 'تم تحديث المسخدم بنجاح',);
+        return $this->sendResponse(null, 'User Updated Successfully',);
     }
 
     // Delete Users
@@ -242,6 +244,26 @@ class usersController extends Controller
 
         $user->delete();
 
-        return $this->sendResponse(null, 'تم حذف المستخدم بنجاح');
+        return $this->sendResponse(null, 'User Deleted Successfully');
+    }
+
+    // Restore Users
+    public function restore($userId)
+    {
+        if (!$this->permission('users_restore')) {
+            abort(403);
+        }
+
+        $validate = Validator::make(['user_id' => $userId], ['user_id' => 'required|exists:users,id']);
+
+        if ($validate->fails()) {
+            return $this->sendError('Validation Error', $validate->errors(), 400);
+        }
+
+        $user = User::where('id', '=', $userId)->withTrashed();
+
+        $user->restore();
+
+        return $this->sendResponse(null, 'User Restored Successfully');
     }
 }

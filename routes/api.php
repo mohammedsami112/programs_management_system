@@ -48,6 +48,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('create', 'create');
         Route::post('update', 'update');
         Route::post('/delete/{userId}', 'delete');
+        Route::post('/restore/{userId}', 'restore');
         Route::get('/{userId}', 'getUser');
     });
 
