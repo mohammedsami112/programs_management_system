@@ -35,7 +35,7 @@
 						</span>
 					</template>
 				</div>
-				<button :disabled="loading" type="submit" class="main-button w-full">
+				<button :disabled="loading" type="submit" class="main-button indigo w-full">
 					{{ loading ? 'Loading...' : 'Login' }}
 				</button>
 			</form>

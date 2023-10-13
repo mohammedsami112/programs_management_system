@@ -9,7 +9,7 @@ Api.interceptors.request.use(
 	(config) => {
 		config.headers['Access-Control-Allow-Origin'] = '*';
 		config.headers['X-Requested-With'] = 'XMLHttpRequest';
-		config.headers['Content-Type'] = 'application/json';
+		// config.headers['Content-Type'] = 'application/json';
 
 		const access_token = localStorage.getItem('access_token');
 

@@ -6,7 +6,7 @@ $transition: 0.3s ease-in-out;
 
 /* Inputs */
 .input-group {
-	@apply block relative  w-full min-w-[200px] mb-5;
+	@apply block relative min-w-[200px] mb-5;
 	input {
 		transition: $transition;
 		@apply block w-full h-[50px] px-3 rounded-md border border-2 border-slate-300;
@@ -31,9 +31,34 @@ $transition: 0.3s ease-in-out;
 /* Buttons */
 .main-button {
 	transition: $transition;
-	@apply rounded-lg bg-indigo-500 py-3 px-6 text-xs font-bold uppercase text-white shadow-md shadow-indigo-500/20;
+	@apply rounded-lg py-3 px-6 text-xs font-bold uppercase text-white shadow-md;
+
+	// Indigo
+	&.indigo {
+		@apply bg-indigo-500 shadow-indigo-500/20;
+		&:hover {
+			@apply shadow-indigo-500/40;
+		}
+	}
+
+	// Danger
+	&.danger {
+		@apply bg-red-500 shadow-red-500/20;
+		&:hover {
+			@apply shadow-red-500/40;
+		}
+	}
+
+	// Default
+	&.default {
+		@apply bg-slate-500 shadow-slate-500/20;
+		&:hover {
+			@apply shadow-slate-500/40;
+		}
+	}
+
 	&:hover {
-		@apply shadow-lg shadow-indigo-500/40;
+		@apply shadow-lg;
 	}
 	&:focus,
 	&:active {
@@ -41,5 +66,16 @@ $transition: 0.3s ease-in-out;
 	}
 	&:disabled {
 		@apply pointer-events-none opacity-50 shadow-none;
+	}
+}
+
+/* Tables */
+
+.p-paginator-pages {
+	.p-paginator-page {
+		@apply w-[50px] h-[50px] rounded-full ml-1;
+		&.p-highlight {
+			@apply bg-slate-100;
+		}
 	}
 }

@@ -1,11 +1,13 @@
 <template>
 	<Toast position="top-right"></Toast>
+	<ConfirmDialog></ConfirmDialog>
 	<RouterView />
 </template>
 
 <script setup>
 import { onMounted } from 'vue';
 import Toast from 'primevue/toast';
+import ConfirmDialog from 'primevue/confirmdialog';
 import { useUserStore } from '@/stores/user';
 
 const userStore = useUserStore();

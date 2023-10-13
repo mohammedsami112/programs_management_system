@@ -5,9 +5,13 @@
 				<h3 class="mb-3 text-slate-500">Dashboard</h3>
 				<ul class="items">
 					<li v-for="item in sidebarStore.menu.topMenu.items" :key="item">
-						<router-link :to="{ name: item.route }" @click="sidebarModal = false">
+						<router-link
+							:to="{ name: item.route }"
+							@click="sidebarModal = false"
+							v-if="$canAccess(item.accessPermission)"
+						>
 							<i :class="item.icon"></i>
-							<span>{{ item.title }}</span>
+							<span>{{ item.title }} </span>
 						</router-link>
 					</li>
 				</ul>

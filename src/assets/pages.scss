@@ -1,6 +1,6 @@
 @import 'main.scss';
 body {
-	@apply pt-[60px];
+	@apply pt-[60px] bg-slate-100;
 }
 
 /* Start Navbar */
@@ -46,3 +46,16 @@ body {
 	}
 }
 /* End Sidebar */
+
+/* Start Users Page */
+.users-page {
+	@apply flex w-full flex-col rounded-xl bg-white bg-clip-border text-gray-700 shadow-md px-4 py-4;
+	.table-actions {
+	.filters {
+			.input-group {
+				margin: 0;
+			}
+		}
+	}
+}
+/* End Users Page */
