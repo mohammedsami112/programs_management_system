@@ -28,7 +28,7 @@ class permissionsController extends Controller
         })->when($request->sort, function ($query, $sort) use ($request) {
             $column = $request->sort_column ? $request->sort_column : 'id';
             $query->orderBy($column, $sort);
-        })->paginate($request->limit || 10);
+        })->paginate($request->limit ? $request->limit : 10);
 
         return $this->sendResponse($permissions);
     }
@@ -72,7 +72,7 @@ class permissionsController extends Controller
             'permissions' => $request->permissions
         ]);
 
-        return $this->sendResponse(null, 'تم اضافة الصلاحية بنجاح');
+        return $this->sendResponse(null, 'Permission Added Successfully');
     }
 
     // Update Permissions
@@ -99,7 +99,7 @@ class permissionsController extends Controller
             'permissions' => $request->permissions
         ]);
 
-        return $this->sendResponse(null, 'تم تعديل الصلاحية بنجاح');
+        return $this->sendResponse(null, 'Permission Updated Successfully');
     }
 
     // Delete Permissions
@@ -118,6 +118,25 @@ class permissionsController extends Controller
         $permission = Permission::find($permissionId);
         $permission->delete();
 
-        return $this->sendResponse(null, 'تم حذف الصلاحية بنجاح');
+        return $this->sendResponse(null, 'Permission Deleted Successfully');
+    }
+
+    // Restore Permissions
+    public function restore($permissionId)
+    {
+        if (!$this->permission('permissions_restore')) {
+            abort(403);
+        }
+
+        $validate = Validator::make(['permission_id' => $permissionId], ['permission_id' => 'required|exists:permissions,id']);
+
+        if ($validate->fails()) {
+            return $this->sendError('Validation Error', $validate->messages(), 400);
+        }
+
+        $permission = Permission::where('id', '=', $permissionId)->withTrashed();
+        $permission->restore();
+
+        return $this->sendResponse(null, 'Permission Restored Successfully');
     }
 }
