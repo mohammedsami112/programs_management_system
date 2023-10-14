@@ -33,7 +33,7 @@ const router = createRouter({
 						pageTitle: 'Permissions Page',
 						canAccess: 'permissions_view',
 					},
-					component: () => import('@/views/pages/UsersPage.vue'),
+					component: () => import('@/views/pages/PermissionsPage.vue'),
 				},
 				{
 					path: '/programs',

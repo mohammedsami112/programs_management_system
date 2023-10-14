@@ -1,21 +1,21 @@
 <template>
-	<div class="users-page">
+	<div class="permissions-page">
 		<DataTable
 			:loading="loading"
-			:value="usersStore.users.data"
+			:value="permissionsStore.permissions.data"
 			lazy
 			paginator
-			:rows="usersStore.filters.limit"
+			:rows="permissionsStore.filters.limit"
 			:rowsPerPageOptions="[10, 20, 50]"
-			:totalRecords="usersStore.users.total"
+			:totalRecords="permissionsStore.permissions.total"
 			@page="onPage"
 			@sort="onSort"
 			tableStyle="min-width: 50rem"
 		>
 			<template #header>
 				<div class="table-actions flex justify-between items-center">
-					<div class="actions mb-4" v-if="$canAccess('users_create')">
-						<createUser @success="getUsers()"></createUser>
+					<div class="actions mb-4" v-if="$canAccess('permissions_create')">
+						<createPermissions @success="getPermissions()"></createPermissions>
 					</div>
 					<div class="filters">
 						<div class="flex items-center mb-3">
@@ -25,28 +25,21 @@
 									type="text"
 									id="search"
 									placeholder="Search"
-									v-model="usersStore.filters.search"
+									v-model="permissionsStore.filters.search"
 								/>
 								<i
-									@click="getUsers()"
+									@click="getPermissions()"
 									class="pi pi-search flex items-center justify-center absolute cursor-pointer w-[40px] h-[40px] right-[5px] top-[5px]"
 								></i>
 							</div>
-							<Dropdown
-								v-model="usersStore.filters.permission"
-								@change="getUsers()"
-								:options="usersStore.formInit.permissions"
-								:loading="formInitLoading"
-								showClear
-								optionLabel="title"
-								optionValue="id"
-								placeholder="Filter By Permission"
-								class="w-[250px] ml-3"
-							/>
 						</div>
 						<div class="flex items-center justify-center">
-							<InputSwitch :falseValue="null" v-model="usersStore.filters.trash" @change="getUsers()" />
-							<span class="ml-3">Deleted Users</span>
+							<InputSwitch
+								:falseValue="null"
+								v-model="permissionsStore.filters.trash"
+								@change="getPermissions()"
+							/>
+							<span class="ml-3">Deleted Permissions</span>
 						</div>
 					</div>
 				</div>
@@ -59,36 +52,37 @@
 				:field="header.field"
 				:header="header.title"
 			>
-				<template v-if="header.field == 'permission'" #body="{ data }">
-					{{ data.permission.title }}
-				</template>
 				<template v-if="header.field == 'created_at'" #body="{ data }">
 					{{ moment(data.created_at).format('YYYY-MM-DD h:m:s A') }}
 				</template>
 			</Column>
 			<Column
 				header="Actions"
-				v-if="$canAccess('users_delete') || $canAccess('users_restore') || $canAccess('users_update')"
+				v-if="
+					$canAccess('permissions_delete') ||
+					$canAccess('permissions_restore') ||
+					$canAccess('permissions_update')
+				"
 			>
 				<template #body="{ data }">
-					<div class="actions flex items-center justify-between">
+					<div class="actions flex items-center justify-around">
 						<i
 							:class="{ 'pi-trash': !deleteLoading, 'pi-spin pi-spinner': deleteLoading }"
 							class="pi cursor-pointer text-xl"
 							@click="deleteRecord(data.id)"
-							v-if="data.deleted_at == null && $canAccess('users_delete')"
+							v-if="data.deleted_at == null && $canAccess('permissions_delete')"
 						></i>
 						<i
-							v-else-if="data.deleted_at != null && $canAccess('users_restore')"
+							v-else-if="data.deleted_at != null && $canAccess('permissions_restore')"
 							:class="{ 'pi-replay': !deleteLoading, 'pi-span pi-spinner': deleteLoading }"
 							class="pi cursor-pointer text-xl"
 							@click="restoreRecord(data.id)"
 						></i>
-						<editUser
-							:user="data"
-							@success="getUsers()"
-							v-if="data.deleted_at == null && $canAccess('users_update')"
-						></editUser>
+						<editPermission
+							:permission="data"
+							@success="getPermissions()"
+							v-if="data.deleted_at == null && $canAccess('permissions_update')"
+						></editPermission>
 					</div>
 				</template>
 			</Column>
@@ -104,26 +98,24 @@ import Dropdown from 'primevue/dropdown';
 import InputSwitch from 'primevue/inputswitch';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
-import createUser from '@/components/users/create.vue';
-import editUser from '@/components/users/edit.vue';
-import { useUsersStore } from '@/stores/users';
-import usersApi from '@/controllers/users';
+import createPermissions from '@/components/permissions/create.vue';
+import editPermission from '@/components/permissions/edit.vue';
+import { usePermissionsStore } from '@/stores/permissions';
+import permissionsApi from '@/controllers/permissions';
 import moment from 'moment';
 
-const usersStore = useUsersStore();
+const permissionsStore = usePermissionsStore();
 const toast = useToast();
 const confirm = useConfirm();
 const loading = ref(false);
 const deleteLoading = ref(false);
-const formInitLoading = ref(true);
 
-const getUsers = () => {
+const getPermissions = () => {
 	loading.value = true;
-	usersApi
-		.getUsers()
+	permissionsApi
+		.getPermissions()
 		.then((response) => {
-			console.log(response);
-			usersStore.setUsers(response.data);
+			permissionsStore.setPermissions(response.data);
 		})
 		.finally(() => {
 			loading.value = false;
@@ -137,25 +129,16 @@ const headers = reactive([
 		sortable: true,
 	},
 	{
-		title: 'Name',
-		field: 'name',
+		title: 'Title',
+		field: 'title',
 		sortable: true,
 	},
 	{
-		title: 'Username',
-		field: 'username',
-		sortable: true,
-	},
-	{
-		title: 'Email',
-		field: 'email',
+		title: 'Users',
+		field: 'users_count',
 		sortable: false,
 	},
-	{
-		title: 'Permission',
-		field: 'permission',
-		sortable: false,
-	},
+
 	{
 		title: 'Added At',
 		field: 'created_at',
@@ -169,17 +152,17 @@ const onPage = (event) => {
 	let page = 1 + event.page;
 	let limit = event.rows;
 
-	usersStore.filters.limit = limit;
-	usersStore.filters.page = page;
+	permissionsStore.filters.limit = limit;
+	permissionsStore.filters.page = page;
 
-	getUsers();
+	getPermissions();
 };
 
 // Sorting
 const onSort = (event) => {
-	usersStore.filters.sort.column = event.sortField;
-	usersStore.filters.sort.sort = event.sortOrder == -1 ? 'ASC' : 'DESC';
-	getUsers();
+	permissionsStore.filters.sort.column = event.sortField;
+	permissionsStore.filters.sort.sort = event.sortOrder == -1 ? 'ASC' : 'DESC';
+	getPermissions();
 };
 
 // Delete
@@ -193,11 +176,11 @@ const deleteRecord = (id) => {
 			rejectClass: 'main-button default mr-3',
 			accept: () => {
 				deleteLoading.value = true;
-				usersApi
-					.deleteUser(id)
+				permissionsApi
+					.deletePermission(id)
 					.then((response) => {
 						toast.add({ severity: 'success', detail: response.message, life: 3000 });
-						getUsers();
+						getPermissions();
 					})
 					.finally(() => {
 						deleteLoading.value = false;
@@ -218,11 +201,11 @@ const restoreRecord = (id) => {
 			rejectClass: 'main-button default mr-3',
 			accept: () => {
 				deleteLoading.value = true;
-				usersApi
-					.restoreUser(id)
+				permissionsApi
+					.restorePermission(id)
 					.then((response) => {
 						toast.add({ severity: 'success', detail: response.message, life: 3000 });
-						getUsers();
+						getPermissions();
 					})
 					.finally(() => {
 						deleteLoading.value = false;
@@ -233,15 +216,6 @@ const restoreRecord = (id) => {
 };
 
 onMounted(() => {
-	getUsers();
-
-	usersApi
-		.getUsersFormInit()
-		.then((response) => {
-			usersStore.setFormInit(response.data);
-		})
-		.finally(() => {
-			formInitLoading.value = false;
-		});
+	getPermissions();
 });
 </script>

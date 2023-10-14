@@ -299,7 +299,7 @@ const editUser = () => {
 					detail: error.response.data.message,
 					life: 3000,
 				});
-				$externalResults.create = error.response.data.data;
+				$externalResults.edit = error.response.data.data;
 			})
 			.finally(() => {
 				loading.value = false;
