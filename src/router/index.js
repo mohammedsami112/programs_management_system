@@ -42,7 +42,7 @@ const router = createRouter({
 						pageTitle: 'Programs Page',
 						canAccess: 'programs_view',
 					},
-					component: () => import('@/views/pages/HomePage.vue'),
+					component: () => import('@/views/pages/ProgramsPage.vue'),
 				},
 				{
 					path: '/logs',

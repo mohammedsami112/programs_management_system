@@ -65,7 +65,7 @@ export const usePermissionsStore = defineStore('permissions-store', {
 						value: 'programs_view',
 					},
 					{
-						label: 'Show His Users Only',
+						label: 'Show His Programs Only',
 						value: 'programs_his_programs',
 					},
 					{
