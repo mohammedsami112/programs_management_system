@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Program;
 use App\Models\ProgramUsers;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -26,7 +27,7 @@ class programsController extends Controller
     public function getPrograms(Request $request)
     {
 
-        $programs = Program::when($request->trash == true, function ($query) {
+        $programs = Program::withCount('users')->with('users')->when($request->trash == true, function ($query) {
             $query->onlyTrashed();
         })->when($request->search, function ($query, $search) {
             $query->where('title', 'LIKE', "%$search%");
@@ -35,7 +36,7 @@ class programsController extends Controller
             $query->orderBy($column, $sort);
         })->when($this->permission('programs_his_programs') == true, function ($query) {
             $query->where('creator', '=', Auth::user()->id);
-        })->paginate($request->limit || 10);
+        })->paginate($request->limit ? $request->limit : 10);
 
         return $this->sendResponse($programs);
     }
@@ -61,7 +62,7 @@ class programsController extends Controller
             'creator' => Auth::user()->id
         ]);
 
-        return $this->sendResponse(null, 'تم انشاء البرنامج بنجاح');
+        return $this->sendResponse(null, 'Program Created Successfully');
     }
 
     // Update Programs
@@ -86,7 +87,7 @@ class programsController extends Controller
             'title' => $request->title
         ]);
 
-        return $this->sendResponse(null, 'تم تحديث البرمنامج بنجاح');
+        return $this->sendResponse(null, 'Program Updated Successfully');
     }
 
     // Delete Programs
@@ -106,7 +107,7 @@ class programsController extends Controller
 
         $program->delete();
 
-        return $this->sendResponse(null, 'تم حذف البرنامج بنجاح');
+        return $this->sendResponse(null, 'Program Deleted Successfully');
     }
 
     // Add Users To Program
@@ -125,15 +126,21 @@ class programsController extends Controller
             return $this->sendError('Validation Error', $validate->errors(), 400);
         }
 
+        $programUsersCount = ProgramUsers::where('program_id', '=', $request->program_id)->where('user_id', '=', $request->user_id)->count();
+
+        if ($programUsersCount >= 1) {
+            return $this->sendError('This User Has Been Added Before', [], 400);
+        }
+
         ProgramUsers::create([
             'program_id' => $request->program_id,
             'user_id' => $request->user_id
         ]);
 
-        return $this->sendResponse(null, 'تم اضافة المستخدم بنجاح');
+        return $this->sendResponse(null, 'User Added To Program Successfully');
     }
 
-    // Add Users To Program
+    // Delete Users From Program
     public function deleteUsers(Request $request)
     {
         if (!$this->permission('programs_delete_users')) {
@@ -150,8 +157,38 @@ class programsController extends Controller
         }
 
         $programUser = ProgramUsers::where('program_id', '=', $request->program_id)->where('user_id', '=', $request->user_id)->first();
-        $programUser->delete();
+        $programUser->forceDelete();
 
-        return $this->sendResponse(null, 'تم حذف المستخدم بنجاح');
+        return $this->sendResponse(null, 'User Deleted From Program Successfully');
+    }
+
+    // Restore Programs
+    public function restore($programId)
+    {
+        if (!$this->permission('programs_restore')) {
+            abort(403);
+        }
+
+        $validate = Validator::make(['program_id' => $programId], ['program_id' => 'required|exists:programs,id']);
+
+        if ($validate->fails()) {
+            return $this->sendError('Validation Error', $validate->messages(), 400);
+        }
+
+        $program = Program::where('id', '=', $programId)->withTrashed();
+        $program->restore();
+
+        return $this->sendResponse(null, 'Program Restored Successfully');
+    }
+
+    // Users List
+    public function usersList()
+    {
+
+        $users = User::when($this->permission('users_his_users'), function ($query) {
+            $query->where('leader', '=', Auth::user()->id);
+        })->without('permission')->select(['id', 'name'])->get();
+
+        return $this->sendResponse($users);
     }
 }

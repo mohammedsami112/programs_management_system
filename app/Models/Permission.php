@@ -14,11 +14,11 @@ class Permission extends Model
 
     protected $fillable = ['title', 'permissions'];
 
-    protected $appends = ['users_count'];
+    // protected $appends = ['users_count'];
 
 
-    public function getUsersCountAttribute()
+    public function users()
     {
-        return User::where('permission', '=', $this->id)->count();
+        return $this->hasMany(User::class, 'permission', 'id');
     }
 }

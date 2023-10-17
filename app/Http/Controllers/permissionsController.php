@@ -21,7 +21,7 @@ class permissionsController extends Controller
     // Get Permissions
     public function getPermissions(Request $request)
     {
-        $permissions = Permission::when($request->trash == true, function ($query) {
+        $permissions = Permission::withCount('users')->when($request->trash == true, function ($query) {
             $query->onlyTrashed();
         })->when($request->search, function ($query, $search) {
             $query->where('title', 'LIKE', "%$search%");

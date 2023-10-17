@@ -56,6 +56,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     // Programs
     Route::group(['prefix' => 'programs', 'controller' => programsController::class], function () {
         Route::get('/', 'getPrograms');
+        Route::get('/users-list', 'usersList');
         Route::post('create', 'create');
         Route::post('update', 'update');
         Route::group(['prefix' => 'users'], function () {
@@ -63,6 +64,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
             Route::post('delete', 'deleteUsers');
         });
         Route::post('/delete/{programId}', 'delete');
+        Route::post('/restore/{programId}', 'restore');
     });
 
     // Logs

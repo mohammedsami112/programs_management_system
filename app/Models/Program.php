@@ -13,4 +13,9 @@ class Program extends Model
     protected $table = 'programs';
 
     protected $fillable = ['title'];
+
+    public function users()
+    {
+        return $this->hasMany(ProgramUsers::class, 'program_id', 'id');
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Permission;
+use App\Models\ProgramUsers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -241,6 +242,7 @@ class usersController extends Controller
         }
 
         $user = User::find($userId);
+        $programs = ProgramUsers::where('user_id', '=', $userId)->delete();
 
         $user->delete();
 
@@ -261,6 +263,7 @@ class usersController extends Controller
         }
 
         $user = User::where('id', '=', $userId)->withTrashed();
+        $programs = ProgramUsers::where('user_id', '=', $userId)->withTrashed()->restore();
 
         $user->restore();
 
