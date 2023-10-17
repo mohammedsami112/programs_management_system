@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Log;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class logController extends Controller
@@ -29,7 +30,11 @@ class logController extends Controller
         })->when($request->sort, function ($query, $sort) use ($request) {
             $column = $request->sort_column ? $request->sort_column : 'id';
             $query->orderBy($column, $sort);
-        })->paginate($request->limit || 10);
+        })->when(!$this->permission('logs_all'), function ($query) {
+            $query->whereHas('program', function ($q) {
+                $q->where('programs.creator', '=', Auth::user()->id);
+            });
+        })->paginate($request->limit ? $request->limit : 10);
 
         return $this->sendResponse($logs);
     }

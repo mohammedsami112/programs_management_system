@@ -23,6 +23,6 @@ class Log extends Model
     }
     public function user()
     {
-        return $this->hasOne(User::class, 'id', 'user_id')->select(['id', 'username']);
+        return $this->hasOne(User::class, 'id', 'user_id')->without('permission')->select(['id', 'username']);
     }
 }
