@@ -51,7 +51,7 @@ const router = createRouter({
 						pageTitle: 'Logs Page',
 						canAccess: 'logs_view',
 					},
-					component: () => import('@/views/pages/HomePage.vue'),
+					component: () => import('@/views/pages/LogsPage.vue'),
 				},
 			],
 		},

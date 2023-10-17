@@ -101,6 +101,10 @@ export const usePermissionsStore = defineStore('permissions-store', {
 						label: 'View Logs Page',
 						value: 'logs_view',
 					},
+					{
+						label: 'Show All Logs',
+						value: 'logs_all',
+					},
 				],
 			},
 		],
