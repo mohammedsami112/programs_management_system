@@ -12,9 +12,9 @@
 		v-model:visible="editDialog"
 		modal
 		:header="'Edit User: ' + usersStore.selectedUser.username"
-		:style="{ width: '50vw' }"
+		class="w-full md:w-[50vw]"
 	>
-		<form @submit.prevent="editUser()">
+		<form @submit.prevent="editUser()" class="mt-3">
 			<div class="avatar w-full flex justify-center items-center flex-col">
 				<Avatar v-if="!previewAvatar" icon="pi pi-user" size="xlarge" />
 				<Avatar v-else :image="previewAvatar" size="xlarge"></Avatar>
@@ -92,7 +92,7 @@
 						</span>
 					</template>
 				</div>
-				<div class="input-group col-span-2">
+				<div class="input-group md:col-span-2">
 					<label for="email">Email</label>
 					<input
 						:disabled="loading"
@@ -143,7 +143,7 @@
 						</span>
 					</template>
 				</div>
-				<div class="input-group col-span-2">
+				<div class="input-group md:col-span-2">
 					<Dropdown
 						id="permission"
 						v-model="inputs.edit.permission"

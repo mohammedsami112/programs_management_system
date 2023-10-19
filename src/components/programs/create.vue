@@ -1,7 +1,7 @@
 <template>
 	<button class="main-button indigo w-fit" @click="createDialog = true">Add New Program</button>
 
-	<Dialog v-model:visible="createDialog" modal header="Create New Program" :style="{ width: '50vw' }">
+	<Dialog v-model:visible="createDialog" modal header="Create New Program" class="w-full md:w-[50vw]">
 		<form @submit.prevent="createProgram()">
 			<div class="grid grid-cols-1 mb-5 mt-5">
 				<div class="input-group">

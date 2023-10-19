@@ -5,6 +5,7 @@
 			:value="usersStore.users.data"
 			lazy
 			paginator
+			scrollable
 			:rows="usersStore.filters.limit"
 			:rowsPerPageOptions="[10, 20, 50]"
 			:totalRecords="usersStore.users.total"
@@ -13,12 +14,12 @@
 			tableStyle="min-width: 50rem"
 		>
 			<template #header>
-				<div class="table-actions flex justify-between items-center">
+				<div class="table-actions flex justify-between items-center flex-col md:flex-row">
 					<div class="actions mb-4" v-if="$canAccess('users_create')">
 						<createUser @success="getUsers()"></createUser>
 					</div>
 					<div class="filters">
-						<div class="flex items-center mb-3">
+						<div class="flex items-center flex-col md:flex-row mb-3">
 							<div class="input-group w-[250px]">
 								<input
 									:disabled="loading"
@@ -41,7 +42,7 @@
 								optionLabel="title"
 								optionValue="id"
 								placeholder="Filter By Permission"
-								class="w-[250px] ml-3"
+								class="w-[250px] mt-3 md:mt-0 md:ml-3"
 							/>
 						</div>
 						<div class="flex items-center justify-center">
@@ -58,6 +59,8 @@
 				:sortable="header.sortable"
 				:field="header.field"
 				:header="header.title"
+				headerClass="w-[200px]"
+				style="width: 200px"
 			>
 				<template v-if="header.field == 'permission'" #body="{ data }">
 					{{ data.permission.title }}

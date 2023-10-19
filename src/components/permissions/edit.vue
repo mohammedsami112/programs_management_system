@@ -12,7 +12,7 @@
 		v-model:visible="editDialog"
 		modal
 		:header="'Edit Permission: ' + permissionsStore.selectedPermission.title"
-		:style="{ width: '50vw' }"
+		class="w-full md:w-[50vw]"
 	>
 		<form @submit.prevent="editPermission()">
 			<div class="grid grid-cols-1 mb-5 mt-5">

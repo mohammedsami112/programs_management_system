@@ -13,7 +13,7 @@
 			tableStyle="min-width: 50rem"
 		>
 			<template #header>
-				<div class="table-actions flex justify-between items-center">
+				<div class="table-actions flex justify-between items-center flex-col md:flex-row">
 					<div class="actions mb-4" v-if="$canAccess('permissions_create')">
 						<createPermissions @success="getPermissions()"></createPermissions>
 					</div>

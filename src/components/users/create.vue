@@ -1,8 +1,8 @@
 <template>
 	<button class="main-button indigo w-fit" @click="createDialog = true">Add New User</button>
 
-	<Dialog v-model:visible="createDialog" modal header="Create New User" :style="{ width: '50vw' }">
-		<form @submit.prevent="createUser()">
+	<Dialog v-model:visible="createDialog" modal header="Create New User" class="w-full md:w-[50vw]">
+		<form @submit.prevent="createUser()" class="mt-3">
 			<div class="avatar w-full flex justify-center items-center flex-col">
 				<Avatar v-if="!previewAvatar" icon="pi pi-user" size="xlarge" />
 				<Avatar v-else :image="previewAvatar" size="xlarge"></Avatar>
@@ -80,7 +80,7 @@
 						</span>
 					</template>
 				</div>
-				<div class="input-group col-span-2">
+				<div class="input-group md:col-span-2">
 					<label for="email">Email</label>
 					<input
 						:disabled="loading"
@@ -132,7 +132,7 @@
 						</span>
 					</template>
 				</div>
-				<div class="input-group col-span-2">
+				<div class="input-group md:col-span-2">
 					<Dropdown
 						id="permission"
 						v-model="inputs.create.permission"
