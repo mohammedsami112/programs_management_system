@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\authController;
+use App\Http\Controllers\globalController;
 use App\Http\Controllers\logController;
 use App\Http\Controllers\permissionsController;
 use App\Http\Controllers\programsController;
@@ -31,6 +32,11 @@ Route::group(['prefix' => 'auth', 'controller' => authController::class], functi
 
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
+
+    // Global
+    Route::group(['controller' => globalController::class], function () {
+        Route::get('/home', 'home');
+    });
 
     // Permissions
     Route::group(['prefix' => 'permissions', 'controller' => permissionsController::class], function () {
