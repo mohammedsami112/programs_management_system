@@ -27,9 +27,9 @@ class logController extends Controller
 
         $logs = Log::when($request->search, function ($query, $search) {
             $query->whereHas('user', function ($q) use ($search) {
-                $q->where('name', 'LIKE', "%$search%")->orWhere('username', 'LIKE', "%$search%");
+                $q->where('users.username', 'LIKE', "%$search%");
             })->orWhereHas('program', function ($q) use ($search) {
-                $q->whereHas('title', 'LIKE', "%$search%");
+                $q->where('programs.title', 'LIKE', "%$search%");
             })->orWhere('device_name', 'LIKE', "$search")->orWhere('address', 'LIKE', "%$search%")->orWhere('mac_address', 'LIKE', "%$search%");
         })->when($request->sort, function ($query, $sort) use ($request) {
             $column = $request->sort_column ? $request->sort_column : 'id';
