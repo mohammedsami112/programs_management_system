@@ -25,7 +25,7 @@
 									v-model="logsStore.filters.search"
 								/>
 								<i
-									@click="getPrograms()"
+									@click="getLogs()"
 									class="pi pi-search flex items-center justify-center absolute cursor-pointer w-[40px] h-[40px] right-[5px] top-[5px]"
 								></i>
 							</div>
@@ -124,7 +124,7 @@ const headers = reactive([
 	{
 		title: 'Added At',
 		field: 'created_at',
-		sortable: false,
+		sortable: true,
 	},
 ]);
 
