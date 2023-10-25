@@ -18,8 +18,6 @@ return new class extends Migration
             $table->string('avatar')->nullable();
             $table->string('email')->unique();
             $table->string('password');
-            $table->string('country');
-            $table->string('city');
             $table->unsignedBigInteger('permission');
             $table->unsignedBigInteger('leader')->nullable();
             $table->timestamp('email_verified_at')->nullable();

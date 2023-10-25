@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Permission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -29,16 +30,23 @@ class authController extends Controller
 
         $user = Auth::user();
         $success = [
-            'token' => $user->createToken('accessToken')->plainTextToken,
+            'token' => $user->createToken('accessToken', ['dashboard'])->plainTextToken,
             'user' => $user,
         ];
 
         return $this->sendResponse($success, 'Login Successfully');
     }
 
+    public function abilities()
+    {
+        $permissions = Permission::find(Auth::user()->permission);
+
+        return $this->sendResponse(explode(',', $permissions->permissions));
+    }
+
     public function logout()
     {
-        Auth::user()->tokens()->delete();
+        Auth::user()->currentAccessToken()->delete();
         return $this->sendResponse(null, 'Logout Successfully');
     }
 }

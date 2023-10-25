@@ -89,8 +89,6 @@ class usersController extends Controller
             'avatar' => 'mimes:jpeg,png,jpg',
             'email' => 'required|unique:users,email',
             'password' => 'required|confirmed',
-            'country' => 'required',
-            'city' => 'required',
             'permission' => 'required|exists:permissions,id',
         ], [
             // Name
@@ -109,12 +107,6 @@ class usersController extends Controller
 
             // Password
             'password.required' => 'Password Is Required',
-
-            // Country
-            'country.required' => 'Country Is Required',
-
-            // City
-            'city.required' => 'City Is Required',
 
             // Permissions
             'permission.required' => 'Permission Is Required',
@@ -137,8 +129,6 @@ class usersController extends Controller
             'avatar' => $avatar,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'country' => $request->country,
-            'city' => $request->city,
             'permission' => $request->permission,
             'leader' => Auth::user()->id
         ]);
@@ -161,8 +151,6 @@ class usersController extends Controller
             'avatar' => 'mimes:jpeg,png,jpg',
             'email' => 'required|unique:users,email,' . $request->item_id,
             'password' => 'confirmed',
-            'country' => 'required',
-            'city' => 'required',
             'permission' => 'required|exists:permissions,id',
         ], [
             // Item Id
@@ -185,12 +173,6 @@ class usersController extends Controller
 
             // Password
             'password.required' => 'Password Is Required',
-
-            // Country
-            'country.required' => 'Country Is Required',
-
-            // City
-            'city.required' => 'City Is Required',
 
             // Permissions
             'permission.required' => 'Permission Is Required',
@@ -220,8 +202,6 @@ class usersController extends Controller
             'avatar' => $avatar,
             'email' => $request->email,
             'password' => isset($request->password) ? Hash::make($request->password) : $user->password,
-            'country' => $request->country,
-            'city' => $request->city,
             'permission' => $request->permission,
         ]);
 

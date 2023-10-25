@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Log;
+use App\Models\Program;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Spatie\Crypto\Rsa\PrivateKey;
+use Spatie\Crypto\Rsa\PublicKey;
 
 class logController extends Controller
 {
@@ -43,13 +46,18 @@ class logController extends Controller
         return $this->sendResponse($logs);
     }
 
-    public function create(Request $request)
+    public function create(Request $request, $programId)
     {
         // if (!$this->permission('logs_create')) {
         //     abort(403);
         // }
 
-        $validate = Validator::make($request->all(), [
+        $program = Program::find($programId);
+        $privateKey = PrivateKey::fromString($program->private_key);
+        $publicKey = PublicKey::fromString($program->public_key);
+        $data = json_decode($privateKey->decrypt(base64_decode($request->data)), true);
+
+        $validate = Validator::make($data, [
             'user_id' => 'required|exists:users,id',
             'program_id' => 'required|exists:programs,id',
             'device_name' => 'required',
@@ -61,20 +69,20 @@ class logController extends Controller
         ]);
 
         if ($validate->fails()) {
-            return $this->sendError('Validation Error', $validate->errors(), 400);
+            return $this->sendError('Validation Error', base64_encode($publicKey->encrypt($validate->errors())), 400);
         }
 
         Log::create([
-            'user_id' => $request->user_id,
-            'program_id' => $request->program_id,
-            'device_name' => $request->device_name,
-            'address' => $request->address,
-            'file' => $request->file,
-            'mac_address' => $request->mac_address,
-            'motherboard' => $request->motherboard,
-            'description' => $request->description
+            'user_id' => $data['user_id'],
+            'program_id' => $data['program_id'],
+            'device_name' => $data['device_name'],
+            'address' => $data['address'],
+            'file' => $data['file'],
+            'mac_address' => $data['mac_address'],
+            'motherboard' => $data['motherboard'],
+            'description' => $data['description']
         ]);
 
-        return $this->sendResponse(null, 'تم اضافة النشاط بنجاح');
+        return $this->sendResponse(null, 'Action Added Successfully');
     }
 }

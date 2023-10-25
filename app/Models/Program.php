@@ -12,7 +12,8 @@ class Program extends Model
 
     protected $table = 'programs';
 
-    protected $fillable = ['title', 'creator'];
+    protected $fillable = ['title', 'creator', 'public_key', 'private_key'];
+
 
     public function users()
     {

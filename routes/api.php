@@ -5,6 +5,7 @@ use App\Http\Controllers\globalController;
 use App\Http\Controllers\logController;
 use App\Http\Controllers\permissionsController;
 use App\Http\Controllers\programsController;
+use App\Http\Controllers\programs\authController as outAuthController;
 use App\Http\Controllers\usersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +29,7 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'auth', 'controller' => authController::class], function () {
     Route::post('login', 'login');
     Route::post('logout', 'logout')->middleware('auth:sanctum');
+    Route::get('abilities', 'abilities')->middleware('auth:sanctum');
 });
 
 
@@ -71,11 +73,15 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         });
         Route::post('/delete/{programId}', 'delete');
         Route::post('/restore/{programId}', 'restore');
+        Route::group(['prefix' => 'auth',  'controller' => outAuthController::class], function () {
+            Route::post('login/{programId}', 'login')->withoutMiddleware('auth:sanctum');
+            Route::post('logout', 'logout');
+        });
     });
 
     // Logs
     Route::group(['prefix' => 'logs', 'controller' => logController::class], function () {
         Route::get('/', 'getLogs');
-        Route::post('create', 'create')->withoutMiddleware('auth:sanctum');
+        Route::post('create/{programId}', 'create');
     });
 });

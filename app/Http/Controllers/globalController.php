@@ -12,25 +12,27 @@ class globalController extends Controller
 {
     public function home()
     {
-        $users = User::when($this->permission('users_his_users'), function ($query) {
-            $query->where('leader', '=', Auth::user()->id);
-        })->count();
+        $data = [];
+        if ($this->permission("users_view")) {
+            $users = User::when($this->permission('users_his_users'), function ($query) {
+                $query->where('leader', '=', Auth::user()->id);
+            })->count();
+            $data['users'] = $users;
 
-        $onlineUsers = AccessTokens::select('tokenable_id')->when($this->permission('users_his_users'), function ($query) {
-            $query->whereHas('user', function ($query) {
-                $query->where('users.leader', '=', Auth::user()->id);
-            });
-        })->distinct()->count('tokenable_id');
+            $onlineUsers = AccessTokens::select('tokenable_id')->when($this->permission('users_his_users'), function ($query) {
+                $query->whereHas('user', function ($query) {
+                    $query->where('users.leader', '=', Auth::user()->id);
+                });
+            })->where('abilities', '=', '["dashboard"]')->distinct()->count('tokenable_id');
+            $data['online_users'] = $onlineUsers;
+        }
 
-        $programs = Program::when($this->permission('programs_his_programs'), function ($query) {
-            $query->where('creator', '=', Auth::user()->id);
-        })->count();
-
-        $data = [
-            'users' => $users,
-            'online_users' => $onlineUsers,
-            'programs' => $programs
-        ];
+        if ($this->permission('programs_view')) {
+            $programs = Program::when($this->permission('programs_his_programs'), function ($query) {
+                $query->where('creator', '=', Auth::user()->id);
+            })->count();
+            $data['programs'] = $programs;
+        }
 
         return $this->sendResponse($data);
     }

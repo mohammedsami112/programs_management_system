@@ -36,6 +36,12 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
+        'permission',
+        'email_verified_at',
+        'leader',
+        'created_at',
+        'updated_at',
+        'deleted_at',
         'password',
         'remember_token',
     ];
@@ -50,10 +56,10 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    protected $with = ['permission'];
+    protected $with = ['user_permission'];
 
-    public function permission()
+    public function user_permission()
     {
-        return $this->hasOne(Permission::class, 'id', 'permission')->select(['id', 'title', 'permissions']);
+        return $this->hasOne(Permission::class, 'id', 'permission')->select(['id', 'title']);
     }
 }

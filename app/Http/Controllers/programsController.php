@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Spatie\Crypto\Rsa\KeyPair;
 
 class programsController extends Controller
 {
@@ -38,6 +39,12 @@ class programsController extends Controller
             $query->where('creator', '=', Auth::user()->id);
         })->paginate($request->limit ? $request->limit : 10);
 
+        if (!$this->permission('programs_access_keys')) {
+            $programs->getCollection()->each(function ($program) {
+                $program->makeHidden(['public_key', 'private_key']);
+            });
+        }
+
         return $this->sendResponse($programs);
     }
 
@@ -57,9 +64,13 @@ class programsController extends Controller
             return $this->sendError('Validation Error', $validate->errors(), 400);
         }
 
+        [$privateKey, $publicKey] = (new KeyPair())->generate();
+        // dd($privateKey, $publicKey);
         Program::create([
             'title' => $request->title,
-            'creator' => Auth::user()->id
+            'creator' => Auth::user()->id,
+            'public_key' => $publicKey,
+            'private_key' => $privateKey,
         ]);
 
         return $this->sendResponse(null, 'Program Created Successfully');
