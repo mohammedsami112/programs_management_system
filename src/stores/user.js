@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia';
-
+import authApi from '@/controllers/auth';
 export const useUserStore = defineStore('user-store', {
 	state: () => ({
+		permissions: JSON.parse(localStorage.getItem('abilities')) || [],
 		user: {},
 	}),
 
@@ -18,6 +19,17 @@ export const useUserStore = defineStore('user-store', {
 		},
 		setUserData() {
 			this.user = JSON.parse(localStorage.getItem('user_data'));
+		},
+		getAbilities() {
+			authApi
+				.abilities()
+				.then((response) => {
+					localStorage.setItem('abilities', JSON.stringify(response.data));
+					this.permissions = response.data;
+				})
+				.finally(() => {
+					return true;
+				});
 		},
 	},
 });

@@ -3,7 +3,7 @@
 
 	<Dialog v-model:visible="createDialog" modal header="Create New User" class="w-full md:w-[50vw]">
 		<form @submit.prevent="createUser()" class="mt-3">
-			<div class="avatar w-full flex justify-center items-center flex-col">
+			<!-- <div class="avatar w-full flex justify-center items-center flex-col">
 				<Avatar v-if="!previewAvatar" icon="pi pi-user" size="xlarge" />
 				<Avatar v-else :image="previewAvatar" size="xlarge"></Avatar>
 				<FileUpload
@@ -14,7 +14,7 @@
 					@select="handelUploadingAvatar"
 					chooseLabel="Choose Avatar"
 				/>
-			</div>
+			</div> -->
 			<div class="grid grid-cols-1 md:grid-cols-2 md:gap-4 mb-5 mt-5">
 				<div class="input-group">
 					<label for="name">Name</label>
@@ -48,7 +48,7 @@
 						</span>
 					</template>
 				</div>
-				<div class="input-group">
+				<!-- <div class="input-group">
 					<label for="country">Country</label>
 					<input
 						:disabled="loading"
@@ -79,7 +79,7 @@
 							{{ error.$message }}
 						</span>
 					</template>
-				</div>
+				</div> -->
 				<div class="input-group md:col-span-2">
 					<label for="email">Email</label>
 					<input
@@ -192,8 +192,6 @@ const inputs = reactive({
 	create: {
 		name: null,
 		username: null,
-		country: null,
-		city: null,
 		email: null,
 		password: null,
 		password_confirmation: null,
@@ -213,12 +211,7 @@ const rules = computed(() => ({
 		username: {
 			required: helpers.withMessage('Username Is Required', required),
 		},
-		country: {
-			required: helpers.withMessage('Country Is Required', required),
-		},
-		city: {
-			required: helpers.withMessage('City Is Required', required),
-		},
+
 		email: {
 			required: helpers.withMessage('Email Is Required', required),
 			email: helpers.withMessage('Email Is Invalid', email),

@@ -4,6 +4,7 @@ import 'primevue/resources/themes/tailwind-light/theme.css';
 
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
+import { useUserStore } from '@/stores/user';
 import PrimeVue from 'primevue/config';
 import ToastService from 'primevue/toastservice';
 import ConfirmationService from 'primevue/confirmationservice';
@@ -14,11 +15,12 @@ import router from './router';
 const app = createApp(App);
 
 app.config.globalProperties.$canAccess = (permission) => {
-	let user = JSON.parse(localStorage.getItem('user_data'));
-	let userPermissions = user.permission.permissions.split(',');
+	// let user = JSON.parse(localStorage.getItem('user_data'));
+	// let userPermissions = user.permission.permissions.split(',');
+	const userStore = useUserStore();
 	return permission == null
 		? true
-		: userPermissions.filter((accessPermission) => accessPermission == permission).length > 0;
+		: userStore.permissions.filter((accessPermission) => accessPermission == permission).length > 0;
 };
 
 app.use(createPinia());

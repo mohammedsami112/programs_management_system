@@ -20,6 +20,19 @@ $transition: 0.3s ease-in-out;
 			@apply outline-0 border-indigo-400;
 		}
 	}
+	textarea {
+		transition: $transition;
+		@apply block w-full px-3 rounded-md border border-2 border-slate-300;
+		&.invalid {
+			@apply outline-0 border-rose-400;
+		}
+		&:not(.invalid):hover {
+			@apply border-indigo-100;
+		}
+		&:not(.invalid):focus {
+			@apply outline-0 border-indigo-400;
+		}
+	}
 	label {
 		@apply block w-fit mb-3 text-slate-500;
 	}

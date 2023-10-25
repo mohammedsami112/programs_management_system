@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { getCurrentInstance } from 'vue';
+import { useUserStore } from '@/stores/user';
 
 const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
@@ -63,7 +64,7 @@ const router = createRouter({
 	],
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
 	const isLoggedIn = localStorage.getItem('access_token');
 
 	// Redirect User If Not LoggedIn
@@ -75,12 +76,15 @@ router.beforeEach((to, from, next) => {
 
 	if (isLoggedIn) {
 		// Check Access Permission
-		let user = JSON.parse(localStorage.getItem('user_data'));
-		let userPermissions = user.permission.permissions.split(',');
+		const userStore = useUserStore();
+		await userStore.getAbilities();
+		// let user = JSON.parse(localStorage.getItem('user_data'));
+		// let userPermissions = user.permission.permissions.split(',');
+
 		let accessPermission =
 			to.meta.canAccess == null
 				? true
-				: userPermissions.filter((permission) => permission == to.meta.canAccess).length > 0;
+				: userStore.permissions.filter((permission) => permission == to.meta.canAccess).length > 0;
 
 		if (!accessPermission) {
 			next({ name: 'HomePage' });

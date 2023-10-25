@@ -1,6 +1,6 @@
 <template>
 	<div class="home-page grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-		<div class="counter flex items-center bg-white w-full p-4 rounded-xl shadow-md">
+		<div class="counter flex items-center bg-white w-full p-4 rounded-xl shadow-md" v-if="$canAccess('users_view')">
 			<div class="icon bg-orange-100 rounded-lg p-3 mr-4 flex items-center justify-center">
 				<i class="pi pi-users text-[40px] text-orange-500"></i>
 			</div>
@@ -9,7 +9,7 @@
 				<p class="mb-2 text-lg font-semibold text-gray-700">{{ globalStore.home.users || 0 }}</p>
 			</div>
 		</div>
-		<div class="counter flex items-center bg-white w-full p-4 rounded-xl shadow-md">
+		<div class="counter flex items-center bg-white w-full p-4 rounded-xl shadow-md" v-if="$canAccess('users_view')">
 			<div class="icon bg-blue-100 rounded-lg p-3 mr-4 flex items-center justify-center">
 				<i class="pi pi-users text-[40px] text-blue-500"></i>
 			</div>
@@ -18,7 +18,10 @@
 				<p class="mb-2 text-lg font-semibold text-gray-700">{{ globalStore.home.online_users || 0 }}</p>
 			</div>
 		</div>
-		<div class="counter flex items-center bg-white w-full p-4 rounded-xl shadow-md">
+		<div
+			class="counter flex items-center bg-white w-full p-4 rounded-xl shadow-md"
+			v-if="$canAccess('programs_view')"
+		>
 			<div class="icon bg-indigo-100 rounded-lg p-3 mr-4 flex items-center justify-center">
 				<i class="pi pi-database text-[40px] text-indigo-500"></i>
 			</div>

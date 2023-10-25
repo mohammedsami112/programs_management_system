@@ -74,11 +74,16 @@
 					$canAccess('programs_delete') ||
 					$canAccess('programs_restore') ||
 					$canAccess('programs_update') ||
-					$canAccess('programs_add_users')
+					$canAccess('programs_add_users') ||
+					$canAccess('programs_access_keys')
 				"
 			>
 				<template #body="{ data }">
 					<div class="actions flex items-center justify-around">
+						<accessKeys
+							:program="data"
+							v-if="data.deleted_at == null && $canAccess('programs_access_keys')"
+						></accessKeys>
 						<i
 							:class="{ 'pi-trash': !deleteLoading, 'pi-spin pi-spinner': deleteLoading }"
 							class="pi cursor-pointer text-xl"
@@ -119,6 +124,7 @@ import { useToast } from 'primevue/usetoast';
 import createProgram from '@/components/programs/create.vue';
 import editProgram from '@/components/programs/edit.vue';
 import addUser from '@/components/programs/addUser.vue';
+import accessKeys from '@/components/programs/keys.vue';
 import { useProgramsStore } from '@/stores/programs';
 import programsApi from '@/controllers/programs';
 import moment from 'moment';

@@ -53,6 +53,10 @@ Api.interceptors.response.use(
 			window.location.href = '/';
 		}
 
+		if (error.response.status == 403) {
+			window.location.href = '/dashboard';
+		}
+
 		return Promise.reject(error);
 	}
 );

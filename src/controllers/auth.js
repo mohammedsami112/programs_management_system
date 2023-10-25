@@ -12,4 +12,7 @@ export default {
 	logout() {
 		return Api.post('/auth/logout').then((response) => response.data);
 	},
+	abilities() {
+		return Api.get('/auth/abilities').then((response) => response.data);
+	},
 };

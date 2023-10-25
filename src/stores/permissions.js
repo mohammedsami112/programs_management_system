@@ -69,6 +69,10 @@ export const usePermissionsStore = defineStore('permissions-store', {
 						value: 'programs_his_programs',
 					},
 					{
+						label: 'Show Programs Keys',
+						value: 'programs_access_keys',
+					},
+					{
 						label: 'Add Users To Programs',
 						value: 'programs_add_users',
 					},

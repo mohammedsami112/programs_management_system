@@ -63,7 +63,7 @@
 				style="width: 200px"
 			>
 				<template v-if="header.field == 'permission'" #body="{ data }">
-					{{ data.permission.title }}
+					{{ data.user_permission.title }}
 				</template>
 				<template v-if="header.field == 'created_at'" #body="{ data }">
 					{{ moment(data.created_at).format('YYYY-MM-DD h:m:s A') }}
