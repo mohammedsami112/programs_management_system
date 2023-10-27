@@ -13,9 +13,9 @@ use Spatie\Crypto\Rsa\PublicKey;
 
 class authController extends Controller
 {
-    public function login(Request $request, $programId)
+    public function login(Request $request)
     {
-        $program = Program::find($programId);
+        $program = Program::where('api_token', '=', $request->header('api_token'))->first();
         $privateKey = PrivateKey::fromString($program->private_key);
         $publicKey = PublicKey::fromString($program->public_key);
         $data = json_decode($privateKey->decrypt(base64_decode($request->data)), true);

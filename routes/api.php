@@ -78,7 +78,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('/force_delete/{programId}', 'forceDelete');
         Route::post('/restore/{programId}', 'restore');
         Route::group(['prefix' => 'auth',  'controller' => outAuthController::class], function () {
-            Route::post('login/{programId}', 'login')->withoutMiddleware('auth:sanctum');
+            Route::post('login', 'login')->withoutMiddleware('auth:sanctum');
             Route::post('logout', 'logout');
         });
     });
@@ -86,6 +86,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     // Logs
     Route::group(['prefix' => 'logs', 'controller' => logController::class], function () {
         Route::get('/', 'getLogs');
-        Route::post('create/{programId}', 'create');
+        Route::post('create', 'create');
     });
 });
