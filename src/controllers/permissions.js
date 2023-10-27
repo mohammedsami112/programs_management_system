@@ -52,6 +52,9 @@ export default {
 	deletePermission(permissionId) {
 		return Api.post(`/permissions/delete/${permissionId}`).then((response) => response.data);
 	},
+	forceDeletePermission(permissionId) {
+		return Api.post(`/permissions/force_delete/${permissionId}`).then((response) => response.data);
+	},
 	restorePermission(permissionId) {
 		return Api.post(`/permissions/restore/${permissionId}`).then((response) => response.data);
 	},

@@ -53,6 +53,9 @@ export default {
 	deleteUser(userId) {
 		return Api.post(`/users/delete/${userId}`).then((response) => response.data);
 	},
+	forceDeleteUser(userId) {
+		return Api.post(`/users/force_delete/${userId}`).then((response) => response.data);
+	},
 	restoreUser(userId) {
 		return Api.post(`/users/restore/${userId}`).then((response) => response.data);
 	},

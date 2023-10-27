@@ -75,13 +75,15 @@
 					$canAccess('programs_restore') ||
 					$canAccess('programs_update') ||
 					$canAccess('programs_add_users') ||
-					$canAccess('programs_access_keys')
+					$canAccess('programs_access_keys') ||
+					$canAccess('programs_force_delete')
 				"
 			>
 				<template #body="{ data }">
 					<div class="actions flex items-center justify-around">
 						<accessKeys
 							:program="data"
+							@success="getPrograms()"
 							v-if="data.deleted_at == null && $canAccess('programs_access_keys')"
 						></accessKeys>
 						<i
@@ -91,11 +93,18 @@
 							v-if="data.deleted_at == null && $canAccess('programs_delete')"
 						></i>
 						<i
-							v-else-if="data.deleted_at != null && $canAccess('programs_restore')"
+							:class="{ 'pi-trash': !deleteLoading, 'pi-spin pi-spinner': deleteLoading }"
+							class="pi cursor-pointer text-xl"
+							@click="forceDeleteRecord(data.id)"
+							v-if="data.deleted_at != null && $canAccess('programs_force_delete')"
+						></i>
+						<i
+							v-if="data.deleted_at != null && $canAccess('programs_restore')"
 							:class="{ 'pi-replay': !deleteLoading, 'pi-span pi-spinner': deleteLoading }"
 							class="pi cursor-pointer text-xl"
 							@click="restoreRecord(data.id)"
 						></i>
+
 						<editProgram
 							:program="data"
 							@success="getPrograms()"
@@ -207,6 +216,31 @@ const deleteRecord = (id) => {
 				deleteLoading.value = true;
 				programsApi
 					.deleteProgram(id)
+					.then((response) => {
+						toast.add({ severity: 'success', detail: response.message, life: 3000 });
+						getPrograms();
+					})
+					.finally(() => {
+						deleteLoading.value = false;
+					});
+			},
+		});
+	}
+};
+
+// Force Delete Program
+const forceDeleteRecord = (id) => {
+	if (deleteLoading.value == false) {
+		confirm.require({
+			message: 'Do You Want To Delete This Record?',
+			header: 'Delete Confirmation',
+			icon: 'pi pi-info-circle',
+			acceptClass: 'main-button danger',
+			rejectClass: 'main-button default mr-3',
+			accept: () => {
+				deleteLoading.value = true;
+				programsApi
+					.forceDeleteProgram(id)
 					.then((response) => {
 						toast.add({ severity: 'success', detail: response.message, life: 3000 });
 						getPrograms();

@@ -27,6 +27,10 @@ export const usePermissionsStore = defineStore('permissions-store', {
 						value: 'users_delete',
 					},
 					{
+						label: 'Permanently Delete Users',
+						value: 'users_force_delete',
+					},
+					{
 						label: 'Restore Users',
 						value: 'users_restore',
 					},
@@ -50,6 +54,10 @@ export const usePermissionsStore = defineStore('permissions-store', {
 					{
 						label: 'Delete Permissions',
 						value: 'permissions_delete',
+					},
+					{
+						label: 'Permanently Delete Permission',
+						value: 'permissions_force_delete',
 					},
 					{
 						label: 'Restore Permissions',
@@ -91,6 +99,10 @@ export const usePermissionsStore = defineStore('permissions-store', {
 					{
 						label: 'Delete Programs',
 						value: 'programs_delete',
+					},
+					{
+						label: 'Permanently Delete Programs',
+						value: 'programs_force_delete',
 					},
 					{
 						label: 'Restore Programs',

@@ -15,6 +15,7 @@ export const useUserStore = defineStore('user-store', {
 		logout() {
 			localStorage.removeItem('user_date');
 			localStorage.removeItem('access_token');
+			localStorage.removeItem('abilities');
 			this.user = {};
 		},
 		setUserData() {
@@ -28,7 +29,7 @@ export const useUserStore = defineStore('user-store', {
 					this.permissions = response.data;
 				})
 				.finally(() => {
-					return true;
+					true;
 				});
 		},
 	},

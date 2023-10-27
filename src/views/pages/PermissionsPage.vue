@@ -61,7 +61,8 @@
 				v-if="
 					$canAccess('permissions_delete') ||
 					$canAccess('permissions_restore') ||
-					$canAccess('permissions_update')
+					$canAccess('permissions_update') ||
+					$canAccess('permissions_force_delete')
 				"
 			>
 				<template #body="{ data }">
@@ -73,7 +74,13 @@
 							v-if="data.deleted_at == null && $canAccess('permissions_delete')"
 						></i>
 						<i
-							v-else-if="data.deleted_at != null && $canAccess('permissions_restore')"
+							:class="{ 'pi-trash': !deleteLoading, 'pi-spin pi-spinner': deleteLoading }"
+							class="pi cursor-pointer text-xl"
+							@click="forceDeleteRecord(data.id)"
+							v-if="data.deleted_at != null && $canAccess('permissions_force_delete')"
+						></i>
+						<i
+							v-if="data.deleted_at != null && $canAccess('permissions_restore')"
 							:class="{ 'pi-replay': !deleteLoading, 'pi-span pi-spinner': deleteLoading }"
 							class="pi cursor-pointer text-xl"
 							@click="restoreRecord(data.id)"
@@ -101,10 +108,12 @@ import { useToast } from 'primevue/usetoast';
 import createPermissions from '@/components/permissions/create.vue';
 import editPermission from '@/components/permissions/edit.vue';
 import { usePermissionsStore } from '@/stores/permissions';
+import { useUserStore } from '@/stores/user';
 import permissionsApi from '@/controllers/permissions';
 import moment from 'moment';
 
 const permissionsStore = usePermissionsStore();
+const userStore = useUserStore();
 const toast = useToast();
 const confirm = useConfirm();
 const loading = ref(false);
@@ -178,6 +187,32 @@ const deleteRecord = (id) => {
 				deleteLoading.value = true;
 				permissionsApi
 					.deletePermission(id)
+					.then(async (response) => {
+						toast.add({ severity: 'success', detail: response.message, life: 3000 });
+						await userStore.getAbilities();
+						getPermissions();
+					})
+					.finally(() => {
+						deleteLoading.value = false;
+					});
+			},
+		});
+	}
+};
+
+// Force Delete
+const forceDeleteRecord = (id) => {
+	if (deleteLoading.value == false) {
+		confirm.require({
+			message: 'Do You Want To Delete This Record?',
+			header: 'Delete Confirmation',
+			icon: 'pi pi-info-circle',
+			acceptClass: 'main-button danger',
+			rejectClass: 'main-button default mr-3',
+			accept: () => {
+				deleteLoading.value = true;
+				permissionsApi
+					.forceDeletePermission(id)
 					.then((response) => {
 						toast.add({ severity: 'success', detail: response.message, life: 3000 });
 						getPermissions();

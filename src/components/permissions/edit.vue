@@ -74,6 +74,7 @@ import MultiSelect from 'primevue/multiselect';
 import { useVuelidate } from '@vuelidate/core';
 import { required, helpers, email, sameAs } from '@vuelidate/validators';
 import { usePermissionsStore } from '@/stores/permissions';
+import { useUserStore } from '@/stores/user';
 import { useToast } from 'primevue/usetoast';
 import permissionsApi from '@/controllers/permissions';
 
@@ -81,6 +82,7 @@ const props = defineProps(['permission']);
 const emit = defineEmits(['success']);
 const editDialog = ref(false);
 const permissionsStore = usePermissionsStore();
+const userStore = useUserStore();
 const toast = useToast();
 const loading = ref(false);
 
@@ -126,13 +128,14 @@ const editPermission = () => {
 
 		permissionsApi
 			.editPermission(inputs.edit)
-			.then((response) => {
+			.then(async (response) => {
 				console.log(response);
 				toast.add({
 					severity: 'success',
 					detail: response.message,
 					life: 3000,
 				});
+				await userStore.getAbilities();
 				emit('success');
 				editDialog.value = false;
 				inputs.edit.title = inputs.edit.permissions = null;

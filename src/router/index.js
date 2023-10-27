@@ -85,7 +85,6 @@ router.beforeEach(async (to, from, next) => {
 			to.meta.canAccess == null
 				? true
 				: userStore.permissions.filter((permission) => permission == to.meta.canAccess).length > 0;
-
 		if (!accessPermission) {
 			next({ name: 'HomePage' });
 		}

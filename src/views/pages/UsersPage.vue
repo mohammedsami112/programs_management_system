@@ -71,10 +71,15 @@
 			</Column>
 			<Column
 				header="Actions"
-				v-if="$canAccess('users_delete') || $canAccess('users_restore') || $canAccess('users_update')"
+				v-if="
+					$canAccess('users_delete') ||
+					$canAccess('users_restore') ||
+					$canAccess('users_update') ||
+					$canAccess('users_force_delete')
+				"
 			>
 				<template #body="{ data }">
-					<div class="actions flex items-center justify-between">
+					<div class="actions flex items-center justify-around">
 						<i
 							:class="{ 'pi-trash': !deleteLoading, 'pi-spin pi-spinner': deleteLoading }"
 							class="pi cursor-pointer text-xl"
@@ -82,7 +87,13 @@
 							v-if="data.deleted_at == null && $canAccess('users_delete')"
 						></i>
 						<i
-							v-else-if="data.deleted_at != null && $canAccess('users_restore')"
+							:class="{ 'pi-trash': !deleteLoading, 'pi-spin pi-spinner': deleteLoading }"
+							class="pi cursor-pointer text-xl"
+							@click="forceDeleteRecord(data.id)"
+							v-if="data.deleted_at != null && $canAccess('users_force_delete')"
+						></i>
+						<i
+							v-if="data.deleted_at != null && $canAccess('users_restore')"
 							:class="{ 'pi-replay': !deleteLoading, 'pi-span pi-spinner': deleteLoading }"
 							class="pi cursor-pointer text-xl"
 							@click="restoreRecord(data.id)"
@@ -198,6 +209,31 @@ const deleteRecord = (id) => {
 				deleteLoading.value = true;
 				usersApi
 					.deleteUser(id)
+					.then((response) => {
+						toast.add({ severity: 'success', detail: response.message, life: 3000 });
+						getUsers();
+					})
+					.finally(() => {
+						deleteLoading.value = false;
+					});
+			},
+		});
+	}
+};
+
+// Force
+const forceDeleteRecord = (id) => {
+	if (deleteLoading.value == false) {
+		confirm.require({
+			message: 'Do You Want To Delete This Record?',
+			header: 'Delete Confirmation',
+			icon: 'pi pi-info-circle',
+			acceptClass: 'main-button danger',
+			rejectClass: 'main-button default mr-3',
+			accept: () => {
+				deleteLoading.value = true;
+				usersApi
+					.forceDeleteUser(id)
 					.then((response) => {
 						toast.add({ severity: 'success', detail: response.message, life: 3000 });
 						getUsers();
