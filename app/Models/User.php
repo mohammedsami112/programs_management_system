@@ -39,9 +39,7 @@ class User extends Authenticatable
         'permission',
         'email_verified_at',
         'leader',
-        'created_at',
-        'updated_at',
-        'deleted_at',
+
         'password',
         'remember_token',
     ];

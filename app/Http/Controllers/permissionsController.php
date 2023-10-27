@@ -121,6 +121,25 @@ class permissionsController extends Controller
         return $this->sendResponse(null, 'Permission Deleted Successfully');
     }
 
+    // Force Delete Permissions
+    public function forceDelete($permissionId)
+    {
+        if (!$this->permission('permissions_force_delete')) {
+            abort(403);
+        }
+
+        $validate = Validator::make(['permission_id' => $permissionId], ['permission_id' => 'required|exists:permissions,id']);
+
+        if ($validate->fails()) {
+            return $this->sendError('Validation Error', $validate->messages(), 400);
+        }
+
+        $permission = Permission::withTrashed()->find($permissionId);
+        $permission->forceDelete();
+
+        return $this->sendResponse(null, 'Permission Permanently Deleted Successfully');
+    }
+
     // Restore Permissions
     public function restore($permissionId)
     {

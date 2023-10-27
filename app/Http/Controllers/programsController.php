@@ -41,7 +41,7 @@ class programsController extends Controller
 
         if (!$this->permission('programs_access_keys')) {
             $programs->getCollection()->each(function ($program) {
-                $program->makeHidden(['public_key', 'private_key']);
+                $program->makeHidden(['public_key', 'private_key', 'api_token']);
             });
         }
 
@@ -71,6 +71,7 @@ class programsController extends Controller
             'creator' => Auth::user()->id,
             'public_key' => $publicKey,
             'private_key' => $privateKey,
+            'api_token' => md5(rand(0, 1000000000000))
         ]);
 
         return $this->sendResponse(null, 'Program Created Successfully');
@@ -119,6 +120,53 @@ class programsController extends Controller
         $program->delete();
 
         return $this->sendResponse(null, 'Program Deleted Successfully');
+    }
+
+    // Force Delete Programs
+    public function forceDelete($programId)
+    {
+        if (!$this->permission('programs_force_delete')) {
+            abort(403);
+        }
+
+        $validate = Validator::make(['program_id' => $programId], ['program_id' => 'required|exists:programs,id']);
+
+        if ($validate->fails()) {
+            return $this->sendError('Validation Error', $validate->errors(), 400);
+        }
+
+        $program = Program::withTrashed()->find($programId);
+        $programUsers = ProgramUsers::where('program_id', '=', $programId)->withTrashed()->forceDelete();
+
+        $program->forceDelete();
+
+        return $this->sendResponse(null, 'Program Permanently Deleted Successfully');
+    }
+
+    // Regenerate Keys
+    public function regenerateKeys(Request $request)
+    {
+        if (!$this->permission('programs_access_keys')) {
+            abort(403);
+        }
+        $validate = Validator::make($request->all(), [
+            'item_id' => 'required|exists:programs,id',
+        ]);
+
+        if ($validate->fails()) {
+            return $this->sendError('Validation Error', $validate->errors(), 400);
+        }
+
+        $program = Program::find($request->item_id);
+
+        [$privateKey, $publicKey] = (new KeyPair())->generate();
+
+        $program->update([
+            'public_key' => $publicKey,
+            'private_key' => $privateKey,
+        ]);
+
+        return $this->sendResponse(null, 'Keys Regenerated Successfully');
     }
 
     // Add Users To Program

@@ -40,7 +40,7 @@ class usersController extends Controller
     // Get Users
     public function getUsers(Request $request)
     {
-        $users = User::when($request->trash == true, function ($query) {
+        $users = User::where('id', '!=', Auth::user()->id)->when($request->trash == true, function ($query) {
             $query->onlyTrashed();
         })->when($request->search, function ($query, $search) {
             $query->where('name', 'LIKE', "%$search%")->orWhere('username', 'LIKE', "%$search%")->orWhere('email', 'LIKE', "%$search%");
@@ -227,6 +227,27 @@ class usersController extends Controller
         $user->delete();
 
         return $this->sendResponse(null, 'User Deleted Successfully');
+    }
+
+    // Force Delete Users
+    public function forceDelete($userId)
+    {
+        if (!$this->permission('users_force_delete')) {
+            abort(403);
+        }
+
+        $validate = Validator::make(['user_id' => $userId], ['user_id' => 'required|exists:users,id']);
+
+        if ($validate->fails()) {
+            return $this->sendError('Validation Error', $validate->errors(), 400);
+        }
+
+        $user = User::withTrashed()->find($userId);
+        $programs = ProgramUsers::where('user_id', '=', $userId)->withTrashed()->forceDelete();
+
+        $user->forceDelete();
+
+        return $this->sendResponse(null, 'User Permanently Deleted Successfully');
     }
 
     // Restore Users

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('public_key');
             $table->text('private_key');
+            $table->text('api_token');
             $table->timestamps();
             $table->softDeletes();
         });

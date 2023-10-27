@@ -40,8 +40,14 @@ class authController extends Controller
     public function abilities()
     {
         $permissions = Permission::find(Auth::user()->permission);
+        $permissionsArray = [];
 
-        return $this->sendResponse(explode(',', $permissions->permissions));
+        if ($permissions != null) {
+            $permissionsArray = explode(',', $permissions->permissions);
+        }
+
+
+        return $this->sendResponse($permissionsArray);
     }
 
     public function logout()

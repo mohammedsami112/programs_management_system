@@ -46,6 +46,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('create', 'create');
         Route::post('update', 'update');
         Route::post('/delete/{permissionsId}', 'delete');
+        Route::post('/force_delete/{permissionId}', 'forceDelete');
         Route::post('/restore/{permissionsId}', 'restore');
         Route::get('/{permissionId}', 'getPermission');
     });
@@ -57,6 +58,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('create', 'create');
         Route::post('update', 'update');
         Route::post('/delete/{userId}', 'delete');
+        Route::post('/force_delete/{userId}', 'forceDelete');
         Route::post('/restore/{userId}', 'restore');
         Route::get('/{userId}', 'getUser');
     });
@@ -67,11 +69,13 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('/users-list', 'usersList');
         Route::post('create', 'create');
         Route::post('update', 'update');
+        Route::post('keys/regenerate', 'regenerateKeys');
         Route::group(['prefix' => 'users'], function () {
             Route::post('add', 'addUsers');
             Route::post('delete', 'deleteUsers');
         });
         Route::post('/delete/{programId}', 'delete');
+        Route::post('/force_delete/{programId}', 'forceDelete');
         Route::post('/restore/{programId}', 'restore');
         Route::group(['prefix' => 'auth',  'controller' => outAuthController::class], function () {
             Route::post('login/{programId}', 'login')->withoutMiddleware('auth:sanctum');

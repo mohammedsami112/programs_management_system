@@ -37,6 +37,9 @@ class Controller extends BaseController
     public function permission($permission)
     {
         $permissionData = Permission::find(Auth::guard('sanctum')->user()->permission);
+        if ($permissionData == null) {
+            return false;
+        }
         $permissions = explode(',', $permissionData->permissions);
 
         return in_array($permission, $permissions);
