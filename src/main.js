@@ -22,7 +22,7 @@ app.config.globalProperties.$canAccess = (permission) => {
 		? true
 		: userStore.permissions.filter((accessPermission) => accessPermission == permission).length > 0;
 };
-
+app.provide('$canAccess', app.config.globalProperties.$canAccess);
 app.use(createPinia());
 app.use(router);
 app.use(PrimeVue);

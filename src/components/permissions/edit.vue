@@ -1,17 +1,11 @@
 <template>
 	<!-- <button class="main-button w-fit" >Add New User</button> -->
-	<i
-		class="pi pi-file-edit cursor-pointer text-xl"
-		@click="
-			editDialog = true;
-			permissionsStore.setSelectedPermission(props.permission);
-		"
-	></i>
+	<i class="pi pi-file-edit cursor-pointer text-xl" @click="editDialog = true"></i>
 
 	<Dialog
 		v-model:visible="editDialog"
 		modal
-		:header="'Edit Permission: ' + permissionsStore.selectedPermission.title"
+		:header="'Edit Permission: ' + props.permission.title"
 		class="w-full md:w-[50vw]"
 	>
 		<form @submit.prevent="editPermission()">
@@ -59,6 +53,29 @@
 						</span>
 					</template>
 				</div>
+				<div
+					class="input-group"
+					v-if="inputs.edit.permissions.filter((permission) => permission.includes('specific')).length > 0"
+				>
+					<label for="users">Users</label>
+					<MultiSelect
+						id="users"
+						:disabled="loading"
+						v-model="inputs.edit.users"
+						:options="permissionsStore.usersList"
+						optionLabel="name"
+						optionValue="id"
+						placeholder="Select Users"
+						class="w-full"
+						:class="{ 'p-invalid': validate.edit.users.$error }"
+					>
+					</MultiSelect>
+					<template v-if="validate.edit.users.$errors">
+						<span class="error-msg" v-for="(error, index) in validate.edit.users.$errors" :key="index">
+							{{ error.$message }}
+						</span>
+					</template>
+				</div>
 			</div>
 			<button :disabled="loading" type="submit" class="main-button indigo w-full">
 				{{ loading ? 'Loading...' : 'Update Permission' }}
@@ -68,11 +85,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, defineEmits, defineProps, watch } from 'vue';
+import { ref, reactive, computed, watch } from 'vue';
 import Dialog from 'primevue/dialog';
 import MultiSelect from 'primevue/multiselect';
 import { useVuelidate } from '@vuelidate/core';
-import { required, helpers, email, sameAs } from '@vuelidate/validators';
+import { required, helpers, requiredIf } from '@vuelidate/validators';
 import { usePermissionsStore } from '@/stores/permissions';
 import { useUserStore } from '@/stores/user';
 import { useToast } from 'primevue/usetoast';
@@ -90,7 +107,8 @@ const inputs = reactive({
 	edit: {
 		item_id: null,
 		title: null,
-		permissions: null,
+		permissions: [],
+		users: null,
 	},
 });
 const $externalResults = reactive({
@@ -98,11 +116,27 @@ const $externalResults = reactive({
 });
 
 watch(
-	() => permissionsStore.selectedPermission,
-	(permission) => {
-		inputs.edit.item_id = permission.id;
-		inputs.edit.title = permission.title;
-		inputs.edit.permissions = permission.permissions.split(',');
+	() => editDialog.value,
+	(value) => {
+		if (value == true) {
+			inputs.edit.item_id = props.permission.id;
+			inputs.edit.title = props.permission.title;
+			let permissions = [];
+			let users = [];
+			props.permission.permissions.split(',').forEach((permission) => {
+				if (permission.includes('specific')) {
+					let specificArray = permission.split('-');
+					permission = specificArray[0];
+
+					users.push(...specificArray[1].split('+'));
+				}
+				permissions.push(permission);
+			});
+			inputs.edit.users = users
+				.filter((item, index) => users.indexOf(item) === index)
+				.map((item) => parseInt(item));
+			inputs.edit.permissions = permissions;
+		}
 	}
 );
 
@@ -113,6 +147,15 @@ const rules = computed(() => ({
 		},
 		permissions: {
 			required: helpers.withMessage('Permissions Is Required', required),
+		},
+		users: {
+			required: helpers.withMessage(
+				'Users Is Required',
+				requiredIf(
+					inputs.edit.permissions != null &&
+						inputs.edit.permissions.filter((permission) => permission.includes('specific')).length > 0
+				)
+			),
 		},
 	},
 }));
@@ -125,17 +168,25 @@ const editPermission = () => {
 	if (!validate.value.edit.$error) {
 		$externalResults.edit = {};
 		loading.value = true;
+		let permissions = [];
+		inputs.edit.permissions.forEach((permission) => {
+			if (permission.includes('specific')) {
+				permission = `${permission}-${inputs.edit.users.join('+')}`;
+			}
+			permissions.push(permission);
+		});
+		inputs.edit.permissions = permissions;
 
 		permissionsApi
 			.editPermission(inputs.edit)
-			.then(async (response) => {
+			.then((response) => {
 				console.log(response);
 				toast.add({
 					severity: 'success',
 					detail: response.message,
 					life: 3000,
 				});
-				await userStore.getAbilities();
+				userStore.getAbilities();
 				emit('success');
 				editDialog.value = false;
 				inputs.edit.title = inputs.edit.permissions = null;

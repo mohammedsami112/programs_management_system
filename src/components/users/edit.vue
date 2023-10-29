@@ -171,7 +171,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, defineEmits, defineProps, watch } from 'vue';
+import { ref, reactive, computed, watch } from 'vue';
 import Dialog from 'primevue/dialog';
 import Dropdown from 'primevue/dropdown';
 import Avatar from 'primevue/avatar';

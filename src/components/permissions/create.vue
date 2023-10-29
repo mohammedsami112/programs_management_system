@@ -47,6 +47,32 @@
 						</span>
 					</template>
 				</div>
+				<div
+					class="input-group"
+					v-if="
+						inputs.create.permissions != null &&
+						inputs.create.permissions.filter((permission) => permission.includes('specific')).length > 0
+					"
+				>
+					<label for="users">Users</label>
+					<MultiSelect
+						id="users"
+						:disabled="loading"
+						v-model="inputs.create.users"
+						:options="permissionsStore.usersList"
+						optionLabel="name"
+						optionValue="id"
+						placeholder="Select Users"
+						class="w-full"
+						:class="{ 'p-invalid': validate.create.users.$error }"
+					>
+					</MultiSelect>
+					<template v-if="validate.create.users.$errors">
+						<span class="error-msg" v-for="(error, index) in validate.create.users.$errors" :key="index">
+							{{ error.$message }}
+						</span>
+					</template>
+				</div>
 			</div>
 			<button :disabled="loading" type="submit" class="main-button indigo w-full">
 				{{ loading ? 'Loading...' : 'Create New Permission' }}
@@ -56,11 +82,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, defineEmits } from 'vue';
+import { ref, reactive, computed } from 'vue';
 import Dialog from 'primevue/dialog';
 import MultiSelect from 'primevue/multiselect';
 import { useVuelidate } from '@vuelidate/core';
-import { required, helpers, email, sameAs } from '@vuelidate/validators';
+import { required, helpers, requiredIf } from '@vuelidate/validators';
 import { usePermissionsStore } from '@/stores/permissions';
 import { useToast } from 'primevue/usetoast';
 import permissionsApi from '@/controllers/permissions';
@@ -75,6 +101,7 @@ const inputs = reactive({
 	create: {
 		title: null,
 		permissions: null,
+		users: null,
 	},
 });
 const $externalResults = reactive({
@@ -89,6 +116,15 @@ const rules = computed(() => ({
 		permissions: {
 			required: helpers.withMessage('Permissions Is Required', required),
 		},
+		users: {
+			required: helpers.withMessage(
+				'Users Is Required',
+				requiredIf(
+					inputs.create.permissions != null &&
+						inputs.create.permissions.filter((permission) => permission.includes('specific')).length > 0
+				)
+			),
+		},
 	},
 }));
 
@@ -100,6 +136,14 @@ const createPermission = () => {
 	if (!validate.value.create.$error) {
 		$externalResults.create = {};
 		loading.value = true;
+		let permissions = [];
+		inputs.create.permissions.forEach((permission) => {
+			if (permission.includes('specific')) {
+				permission = `${permission}-${inputs.create.users.join('+')}`;
+			}
+			permissions.push(permission);
+		});
+		inputs.create.permissions = permissions;
 		permissionsApi
 			.createPermission(inputs.create)
 			.then((response) => {

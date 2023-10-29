@@ -41,7 +41,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, defineEmits, defineProps, watch } from 'vue';
+import { ref, reactive, computed, watch } from 'vue';
 import Dialog from 'primevue/dialog';
 import MultiSelect from 'primevue/multiselect';
 import { useVuelidate } from '@vuelidate/core';

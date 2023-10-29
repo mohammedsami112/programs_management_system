@@ -20,6 +20,9 @@ export default {
 			},
 		}).then((response) => response.data);
 	},
+	getUsersList() {
+		return Api.get('/users/users-list').then((response) => response.data);
+	},
 	createPermission(inputs) {
 		let formData = new FormData();
 
