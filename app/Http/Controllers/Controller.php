@@ -42,12 +42,6 @@ class Controller extends BaseController
         }
         $permissions = explode(',', $permissionData->permissions);
 
-        if ($search == null) {
-            return in_array($permission, $permissions);
-        }
-
-        return $permissions[collect($permissions)->search(function ($item, $key) {
-            return explode('-', $item)[0] == 'specific_users';
-        })];
+        return in_array($permission, $permissions);
     }
 }

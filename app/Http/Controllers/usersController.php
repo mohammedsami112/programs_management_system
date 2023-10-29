@@ -52,9 +52,6 @@ class usersController extends Controller
             $query->orderBy($column, $sort);
         })->when($this->permission('users_his_users'), function ($query) {
             $query->where('leader', '=', Auth::user()->id);
-        })->when($this->permission(null, 'specific_users'), function ($query, $data) {
-            $ids = explode('+', explode('-', $data)[1]);
-            $query->whereIn('id', $ids);
         })->paginate($request->limit ? $request->limit : 10);
 
         // $users = User::all();
