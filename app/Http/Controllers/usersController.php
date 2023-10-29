@@ -40,6 +40,7 @@ class usersController extends Controller
     // Get Users
     public function getUsers(Request $request)
     {
+        // dd($this->permission(null, 'specific_users'));
         $users = User::where('id', '!=', Auth::user()->id)->when($request->trash == true, function ($query) {
             $query->onlyTrashed();
         })->when($request->search, function ($query, $search) {
@@ -51,6 +52,9 @@ class usersController extends Controller
             $query->orderBy($column, $sort);
         })->when($this->permission('users_his_users'), function ($query) {
             $query->where('leader', '=', Auth::user()->id);
+        })->when($this->permission(null, 'specific_users'), function ($query, $data) {
+            $ids = explode('+', explode('-', $data)[1]);
+            $query->whereIn('id', $ids);
         })->paginate($request->limit ? $request->limit : 10);
 
         // $users = User::all();
@@ -73,6 +77,16 @@ class usersController extends Controller
         $user = User::find($userId);
 
         return $this->sendResponse($user);
+    }
+
+    // Get Users List
+    public function getUsersList()
+    {
+        $users = User::without('user_permission')->select(['id', 'name'])->when($this->permission('users_his_users'), function ($query) {
+            $query->where('leader', '=', Auth::user()->id);
+        })->get();
+
+        return $this->sendResponse($users);
     }
 
     // Create Users

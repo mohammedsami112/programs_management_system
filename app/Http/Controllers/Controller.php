@@ -34,7 +34,7 @@ class Controller extends BaseController
         return response()->json($response, $code);
     }
 
-    public function permission($permission)
+    public function permission($permission, $search = null)
     {
         $permissionData = Permission::find(Auth::guard('sanctum')->user()->permission);
         if ($permissionData == null) {
@@ -42,6 +42,12 @@ class Controller extends BaseController
         }
         $permissions = explode(',', $permissionData->permissions);
 
-        return in_array($permission, $permissions);
+        if ($search == null) {
+            return in_array($permission, $permissions);
+        }
+
+        return $permissions[collect($permissions)->search(function ($item, $key) {
+            return explode('-', $item)[0] == 'specific_users';
+        })];
     }
 }

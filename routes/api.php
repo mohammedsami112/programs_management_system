@@ -55,6 +55,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::group(['prefix' => 'users', 'controller' => usersController::class], function () {
         Route::get('/', 'getUsers');
         Route::get('/form-init', 'usersFilters');
+        Route::get('/users-list', 'getUsersList');
         Route::post('create', 'create');
         Route::post('update', 'update');
         Route::post('/delete/{userId}', 'delete');
