@@ -48,8 +48,11 @@ class Controller extends BaseController
 
     public function specification($selectedSpecification)
     {
-
-        $userSpecifications = explode(',', User::find(Auth::user()->id)->specification);
+        $user = User::find(Auth::user()->id)->specification;
+        if ($user == null) {
+            return false;
+        }
+        $userSpecifications = explode(',', $user);
         $searchSpecifications = explode('-', $userSpecifications[collect($userSpecifications)->search(function ($item, $key) use ($selectedSpecification) {
             return explode('-', $item)[0] == $selectedSpecification;
         })]);
