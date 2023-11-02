@@ -90,16 +90,6 @@ const updateSpecifications = () => {
 			payload.push(specific);
 		}
 	});
-
-	if (payload.length == 0) {
-		toast.add({
-			severity: 'error',
-			detail: 'Choose At Least One User',
-			life: 3000,
-		});
-		return false;
-	}
-
 	loading.value = true;
 	usersApi
 		.updateSpecifications({ user_id: props.user.id, data: payload.join(',') })
