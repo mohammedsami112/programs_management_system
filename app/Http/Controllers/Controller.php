@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Permission;
+use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
@@ -34,7 +35,7 @@ class Controller extends BaseController
         return response()->json($response, $code);
     }
 
-    public function permission($permission, $search = null)
+    public function permission($permission)
     {
         $permissionData = Permission::find(Auth::guard('sanctum')->user()->permission);
         if ($permissionData == null) {
@@ -43,5 +44,20 @@ class Controller extends BaseController
         $permissions = explode(',', $permissionData->permissions);
 
         return in_array($permission, $permissions);
+    }
+
+    public function specification($selectedSpecification)
+    {
+
+        $userSpecifications = explode(',', User::find(Auth::user()->id)->specification);
+        $searchSpecifications = explode('-', $userSpecifications[collect($userSpecifications)->search(function ($item, $key) use ($selectedSpecification) {
+            return explode('-', $item)[0] == $selectedSpecification;
+        })]);
+
+        if ($searchSpecifications == "") {
+            return false;
+        }
+
+        return explode('+', $searchSpecifications[1]);
     }
 }

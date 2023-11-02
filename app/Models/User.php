@@ -28,6 +28,7 @@ class User extends Authenticatable
         'city',
         'permission',
         'leader',
+        'specification'
     ];
 
     /**
@@ -39,7 +40,6 @@ class User extends Authenticatable
         'permission',
         'email_verified_at',
         'leader',
-
         'password',
         'remember_token',
     ];

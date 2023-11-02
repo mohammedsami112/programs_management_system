@@ -58,6 +58,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('/users-list', 'getUsersList');
         Route::post('create', 'create');
         Route::post('update', 'update');
+        Route::post('specification', 'addSpecification');
         Route::post('/delete/{userId}', 'delete');
         Route::post('/force_delete/{userId}', 'forceDelete');
         Route::post('/restore/{userId}', 'restore');

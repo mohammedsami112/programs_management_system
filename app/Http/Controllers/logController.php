@@ -41,6 +41,8 @@ class logController extends Controller
             $query->whereHas('program', function ($q) {
                 $q->where('programs.creator', '=', Auth::user()->id);
             });
+        })->when($this->specification('specific_logs_users'), function ($query, $data) {
+            $query->whereIn('user_id', $data);
         })->paginate($request->limit ? $request->limit : 10);
 
         return $this->sendResponse($logs);

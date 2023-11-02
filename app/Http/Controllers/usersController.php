@@ -52,6 +52,8 @@ class usersController extends Controller
             $query->orderBy($column, $sort);
         })->when($this->permission('users_his_users'), function ($query) {
             $query->where('leader', '=', Auth::user()->id);
+        })->when($this->specification('specific_users'), function ($query, $data) {
+            $query->whereIn('id', $data);
         })->paginate($request->limit ? $request->limit : 10);
 
         // $users = User::all();
@@ -280,5 +282,19 @@ class usersController extends Controller
         $user->restore();
 
         return $this->sendResponse(null, 'User Restored Successfully');
+    }
+
+    // Add Specifications
+    public function addSpecification(Request $request)
+    {
+
+
+        $user = User::find($request->user_id);
+
+        $user->update([
+            'specification' => $request->data
+        ]);
+
+        return $this->sendResponse(null, 'User Specifications Updated Successfully ');
     }
 }

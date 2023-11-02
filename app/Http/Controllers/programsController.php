@@ -37,6 +37,8 @@ class programsController extends Controller
             $query->orderBy($column, $sort);
         })->when($this->permission('programs_his_programs') == true, function ($query) {
             $query->where('creator', '=', Auth::user()->id);
+        })->when($this->specification('specific_programs_users'), function ($query, $data) {
+            $query->whereIn('creator', $data);
         })->paginate($request->limit ? $request->limit : 10);
 
         if (!$this->permission('programs_access_keys')) {
