@@ -34,6 +34,10 @@ export const usePermissionsStore = defineStore('permissions-store', {
 						label: 'Restore Users',
 						value: 'users_restore',
 					},
+					{
+						label: 'Add Specifications',
+						value: 'users_specifications',
+					},
 				],
 			},
 			{
@@ -123,23 +127,23 @@ export const usePermissionsStore = defineStore('permissions-store', {
 					},
 				],
 			},
-			{
-				label: 'Specification',
-				items: [
-					{
-						label: 'Specific Users',
-						value: 'specific_users',
-					},
-					{
-						label: 'Specific Users Programs',
-						value: 'specific_programs_users',
-					},
-					{
-						label: 'Specific Users Logs',
-						value: 'specific_logs_users',
-					},
-				],
-			},
+			// {
+			// 	label: 'Specification',
+			// 	items: [
+			// 		{
+			// 			label: 'Specific Users',
+			// 			value: 'specific_users',
+			// 		},
+			// 		{
+			// 			label: 'Specific Users Programs',
+			// 			value: 'specific_programs_users',
+			// 		},
+			// 		{
+			// 			label: 'Specific Users Logs',
+			// 			value: 'specific_logs_users',
+			// 		},
+			// 	],
+			// },
 		],
 		filters: {
 			search: null,
@@ -152,7 +156,6 @@ export const usePermissionsStore = defineStore('permissions-store', {
 			page: 1,
 		},
 		selectedPermission: {},
-		usersList: [],
 		permissions: [],
 	}),
 
@@ -163,10 +166,6 @@ export const usePermissionsStore = defineStore('permissions-store', {
 
 		setSelectedPermission(payload) {
 			this.selectedPermission = payload;
-		},
-
-		setUsersList(payload) {
-			this.usersList = payload;
 		},
 	},
 });

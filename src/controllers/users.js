@@ -38,6 +38,9 @@ export default {
 			(response) => response.data
 		);
 	},
+	getUsersList() {
+		return Api.get('/users/users-list').then((response) => response.data);
+	},
 	editUser(inputs) {
 		let formData = new FormData();
 
@@ -58,5 +61,8 @@ export default {
 	},
 	restoreUser(userId) {
 		return Api.post(`/users/restore/${userId}`).then((response) => response.data);
+	},
+	updateSpecifications(payload) {
+		return Api.post('/users/specification', payload).then((response) => response.data);
 	},
 };

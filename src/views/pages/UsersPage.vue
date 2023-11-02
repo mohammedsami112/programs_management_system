@@ -75,11 +75,17 @@
 					$canAccess('users_delete') ||
 					$canAccess('users_restore') ||
 					$canAccess('users_update') ||
-					$canAccess('users_force_delete')
+					$canAccess('users_force_delete') ||
+					$canAccess('users_specifications')
 				"
 			>
 				<template #body="{ data }">
 					<div class="actions flex items-center justify-around">
+						<addSpecification
+							:user="data"
+							@success="getUsers()"
+							v-if="data.deleted_at == null && $canAccess('users_specifications')"
+						></addSpecification>
 						<i
 							:class="{ 'pi-trash': !deleteLoading, 'pi-spin pi-spinner': deleteLoading }"
 							class="pi cursor-pointer text-xl"
@@ -111,7 +117,7 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, inject } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Dropdown from 'primevue/dropdown';
@@ -120,10 +126,12 @@ import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
 import createUser from '@/components/users/create.vue';
 import editUser from '@/components/users/edit.vue';
+import addSpecification from '@/components/users/specification.vue';
 import { useUsersStore } from '@/stores/users';
 import usersApi from '@/controllers/users';
 import moment from 'moment';
 
+const $canAccess = inject('$canAccess');
 const usersStore = useUsersStore();
 const toast = useToast();
 const confirm = useConfirm();
@@ -282,5 +290,11 @@ onMounted(() => {
 		.finally(() => {
 			formInitLoading.value = false;
 		});
+
+	if ($canAccess('users_specifications')) {
+		usersApi.getUsersList().then((response) => {
+			usersStore.setUsersList(response.data);
+		});
+	}
 });
 </script>

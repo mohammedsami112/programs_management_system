@@ -53,29 +53,6 @@
 						</span>
 					</template>
 				</div>
-				<div
-					class="input-group"
-					v-if="inputs.edit.permissions.filter((permission) => permission.includes('specific')).length > 0"
-				>
-					<label for="users">Users</label>
-					<MultiSelect
-						id="users"
-						:disabled="loading"
-						v-model="inputs.edit.users"
-						:options="permissionsStore.usersList"
-						optionLabel="name"
-						optionValue="id"
-						placeholder="Select Users"
-						class="w-full"
-						:class="{ 'p-invalid': validate.edit.users.$error }"
-					>
-					</MultiSelect>
-					<template v-if="validate.edit.users.$errors">
-						<span class="error-msg" v-for="(error, index) in validate.edit.users.$errors" :key="index">
-							{{ error.$message }}
-						</span>
-					</template>
-				</div>
 			</div>
 			<button :disabled="loading" type="submit" class="main-button indigo w-full">
 				{{ loading ? 'Loading...' : 'Update Permission' }}
@@ -108,7 +85,6 @@ const inputs = reactive({
 		item_id: null,
 		title: null,
 		permissions: [],
-		users: null,
 	},
 });
 const $externalResults = reactive({
@@ -121,21 +97,7 @@ watch(
 		if (value == true) {
 			inputs.edit.item_id = props.permission.id;
 			inputs.edit.title = props.permission.title;
-			let permissions = [];
-			let users = [];
-			props.permission.permissions.split(',').forEach((permission) => {
-				if (permission.includes('specific')) {
-					let specificArray = permission.split('-');
-					permission = specificArray[0];
-
-					users.push(...specificArray[1].split('+'));
-				}
-				permissions.push(permission);
-			});
-			inputs.edit.users = users
-				.filter((item, index) => users.indexOf(item) === index)
-				.map((item) => parseInt(item));
-			inputs.edit.permissions = permissions;
+			inputs.edit.permissions = props.permission.permissions.split(',');
 		}
 	}
 );
@@ -148,15 +110,6 @@ const rules = computed(() => ({
 		permissions: {
 			required: helpers.withMessage('Permissions Is Required', required),
 		},
-		users: {
-			required: helpers.withMessage(
-				'Users Is Required',
-				requiredIf(
-					inputs.edit.permissions != null &&
-						inputs.edit.permissions.filter((permission) => permission.includes('specific')).length > 0
-				)
-			),
-		},
 	},
 }));
 
@@ -168,14 +121,14 @@ const editPermission = () => {
 	if (!validate.value.edit.$error) {
 		$externalResults.edit = {};
 		loading.value = true;
-		let permissions = [];
-		inputs.edit.permissions.forEach((permission) => {
-			if (permission.includes('specific')) {
-				permission = `${permission}-${inputs.edit.users.join('+')}`;
-			}
-			permissions.push(permission);
-		});
-		inputs.edit.permissions = permissions;
+		// let permissions = [];
+		// inputs.edit.permissions.forEach((permission) => {
+		// 	if (permission.includes('specific')) {
+		// 		permission = `${permission}-${inputs.edit.users.join('+')}`;
+		// 	}
+		// 	permissions.push(permission);
+		// });
+		// inputs.edit.permissions = permissions;
 
 		permissionsApi
 			.editPermission(inputs.edit)

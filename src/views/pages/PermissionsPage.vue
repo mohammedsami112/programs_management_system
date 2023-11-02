@@ -112,7 +112,6 @@ import { useUserStore } from '@/stores/user';
 import permissionsApi from '@/controllers/permissions';
 import moment from 'moment';
 
-const $canAccess = inject('$canAccess');
 const permissionsStore = usePermissionsStore();
 const userStore = useUserStore();
 const toast = useToast();
@@ -253,10 +252,5 @@ const restoreRecord = (id) => {
 
 onMounted(() => {
 	getPermissions();
-	if ($canAccess('permissions_create') || $canAccess('permissions_update')) {
-		permissionsApi.getUsersList().then((response) => {
-			permissionsStore.setUsersList(response.data);
-		});
-	}
 });
 </script>
