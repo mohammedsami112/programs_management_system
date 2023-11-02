@@ -292,7 +292,7 @@ class usersController extends Controller
         $user = User::find($request->user_id);
 
         $user->update([
-            'specification' => $request->data
+            'specification' => $request->data ?? null
         ]);
 
         return $this->sendResponse(null, 'User Specifications Updated Successfully ');
