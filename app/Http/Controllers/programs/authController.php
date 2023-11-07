@@ -4,6 +4,7 @@ namespace App\Http\Controllers\programs;
 
 use App\Http\Controllers\Controller;
 use App\Models\Program;
+use App\Models\ProgramFile;
 use App\Models\ProgramUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -42,10 +43,12 @@ class authController extends Controller
             return $this->sendError('Unauthorized', base64_encode($publicKey->encrypt(json_encode(['error' => 'Username Or Password Is Invalid']))), 401);
         }
 
+        $programFiles = ProgramFile::where('program_id', '=', $program->id)->get();
+
         $success = [
             'token' => $user->createToken('accessToken', ['program'])->plainTextToken,
             'user' => $user,
-            'programs' => ''
+            'programs' => $programFiles
         ];
 
         return $this->sendResponse(base64_encode($publicKey->encrypt(json_encode($success))), 'Login Successfully');
