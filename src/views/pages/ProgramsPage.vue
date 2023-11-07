@@ -76,11 +76,17 @@
 					$canAccess('programs_update') ||
 					$canAccess('programs_add_users') ||
 					$canAccess('programs_access_keys') ||
-					$canAccess('programs_force_delete')
+					$canAccess('programs_force_delete') ||
+					$canAccess('programs_upload_files')
 				"
 			>
 				<template #body="{ data }">
 					<div class="actions flex items-center justify-around">
+						<uploadFiles
+							:program="data"
+							@success="getPrograms()"
+							v-if="data.deleted_at == null && $canAccess('programs_upload_files')"
+						></uploadFiles>
 						<accessKeys
 							:program="data"
 							@success="getPrograms()"
@@ -134,6 +140,7 @@ import createProgram from '@/components/programs/create.vue';
 import editProgram from '@/components/programs/edit.vue';
 import addUser from '@/components/programs/addUser.vue';
 import accessKeys from '@/components/programs/keys.vue';
+import uploadFiles from '@/components/programs/uploadFiles.vue';
 import { useProgramsStore } from '@/stores/programs';
 import programsApi from '@/controllers/programs';
 import moment from 'moment';
@@ -176,6 +183,11 @@ const headers = reactive([
 		title: 'Users Count',
 		field: 'users_count',
 		sortable: true,
+	},
+	{
+		title: 'Files Count',
+		field: 'files_count',
+		sortable: false,
 	},
 	{
 		title: 'Added At',

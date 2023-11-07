@@ -62,4 +62,13 @@ export default {
 	restoreProgram(programId) {
 		return Api.post(`/programs/restore/${programId}`).then((response) => response.data);
 	},
+	uploadFiles(inputs) {
+		let formData = new FormData();
+
+		for (const key in inputs) {
+			formData.append(key, inputs[key]);
+		}
+
+		return Api.post('/programs/upload-files', formData).then((response) => response.data);
+	},
 };

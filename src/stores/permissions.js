@@ -112,6 +112,10 @@ export const usePermissionsStore = defineStore('permissions-store', {
 						label: 'Restore Programs',
 						value: 'programs_restore',
 					},
+					{
+						label: 'Upload Program Files',
+						value: 'programs_upload_files',
+					},
 				],
 			},
 			{
