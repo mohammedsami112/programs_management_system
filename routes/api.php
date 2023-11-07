@@ -72,6 +72,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('create', 'create');
         Route::post('update', 'update');
         Route::post('keys/regenerate', 'regenerateKeys');
+        Route::post('upload-files', 'uploadProgramFiles');
         Route::group(['prefix' => 'users'], function () {
             Route::post('add', 'addUsers');
             Route::post('delete', 'deleteUsers');

@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Program;
+use App\Models\ProgramFile;
 use App\Models\ProgramUsers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Crypto\Rsa\KeyPair;
+use ZipArchive;
 
 class programsController extends Controller
 {
@@ -28,7 +32,7 @@ class programsController extends Controller
     public function getPrograms(Request $request)
     {
 
-        $programs = Program::withCount('users')->with('users')->when($request->trash == true, function ($query) {
+        $programs = Program::withCount(['users', 'files'])->with('users')->when($request->trash == true, function ($query) {
             $query->onlyTrashed();
         })->when($request->search, function ($query, $search) {
             $query->where('title', 'LIKE', "%$search%");
@@ -251,5 +255,49 @@ class programsController extends Controller
         })->without('permission')->select(['id', 'name'])->get();
 
         return $this->sendResponse($users);
+    }
+
+    // Upload Files
+    public function uploadProgramFiles(Request $request)
+    {
+        if (!$this->permission('programs_upload_files')) {
+            abort(403);
+        }
+
+        // Upload & Extract Zip File
+
+        $zip = new ZipArchive();
+
+        $status = $zip->open($request->file('file')->getRealPath());
+
+        if ($status !== true) {
+            return $this->sendError('Error', $status, 400);
+        }
+
+        $extractPath = storage_path('app/public/programs_files/' . $request->item_id . '/');
+
+        if (!File::exists($extractPath)) {
+            File::makeDirectory($extractPath, 0755, true);
+        }
+        $zip->extractTo($extractPath);
+        $zip->close();
+
+        // Get Code From Files And Store It In Database
+
+        $programFiles  = Storage::allFiles('public/programs_files/' . $request->item_id);
+        foreach ($programFiles as $file) {
+            $fileContent = Storage::get($file);
+            ProgramFile::create([
+                'program_id' => $request->item_id,
+                'file_name' => basename($file),
+                'file_code' => $fileContent
+            ]);
+        }
+
+        // Delete Extract Path
+        File::deleteDirectory($extractPath);
+
+
+        return $this->sendResponse(null, 'Files Uploaded & Store Successfully');
     }
 }

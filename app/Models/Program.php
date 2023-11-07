@@ -19,4 +19,9 @@ class Program extends Model
     {
         return $this->hasMany(ProgramUsers::class, 'program_id', 'id');
     }
+
+    public function files()
+    {
+        return $this->hasMany(ProgramFile::class, 'program_id', 'id');
+    }
 }
