@@ -36,7 +36,7 @@ class authController extends Controller
         }
 
         $user = Auth::user();
-        $programUsers = ProgramUsers::where('program_id', '=', $programId)->where('user_id', '=', $user->id)->count();
+        $programUsers = ProgramUsers::where('program_id', '=', $program->id)->where('user_id', '=', $user->id)->count();
 
         if ($programUsers != 1) {
             return $this->sendError('Unauthorized', base64_encode($publicKey->encrypt(json_encode(['error' => 'Username Or Password Is Invalid']))), 401);
@@ -45,6 +45,7 @@ class authController extends Controller
         $success = [
             'token' => $user->createToken('accessToken', ['program'])->plainTextToken,
             'user' => $user,
+            'programs' => ''
         ];
 
         return $this->sendResponse(base64_encode($publicKey->encrypt(json_encode($success))), 'Login Successfully');
