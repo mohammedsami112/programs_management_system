@@ -72,7 +72,7 @@ const inputs = reactive({
 watch(
 	() => specificationDialog.value,
 	(value) => {
-		if (value == true) {
+		if (value == true && props.user.specification != null) {
 			props.user.specification.split(',').forEach((item) => {
 				let specific = item.split('-');
 				let index = inputs.create.findIndex((inputItem) => inputItem.specifications == specific[0]);
