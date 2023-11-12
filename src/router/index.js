@@ -54,6 +54,14 @@ const router = createRouter({
 					},
 					component: () => import('@/views/pages/LogsPage.vue'),
 				},
+				{
+					path: '/settings',
+					name: 'SettingsPage',
+					meta: {
+						pageTitle: 'General Settings',
+					},
+					component: () => import('@/views/pages/SettingsPage.vue'),
+				},
 			],
 		},
 		{

@@ -35,6 +35,12 @@ export const useSidebarStore = defineStore('sidebar-store', {
 						route: 'LogsPage',
 						accessPermission: 'logs_view',
 					},
+					{
+						title: 'Settings',
+						icon: 'pi pi-cog',
+						route: 'SettingsPage',
+						accessPermission: null,
+					},
 				],
 			},
 		},

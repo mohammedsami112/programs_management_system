@@ -116,6 +116,10 @@ export const usePermissionsStore = defineStore('permissions-store', {
 						label: 'Upload Program Files',
 						value: 'programs_upload_files',
 					},
+					{
+						label: 'Show General Keys',
+						value: 'programs_general_keys',
+					},
 				],
 			},
 			{

@@ -52,7 +52,17 @@ export default {
 			(response) => response.data
 		);
 	},
+	updateProfile(inputs) {
+		let formData = new FormData();
 
+		for (const key in inputs) {
+			formData.append(key, inputs[key]);
+		}
+
+		return Api.post('/users/update/profile', formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then(
+			(response) => response.data
+		);
+	},
 	deleteUser(userId) {
 		return Api.post(`/users/delete/${userId}`).then((response) => response.data);
 	},

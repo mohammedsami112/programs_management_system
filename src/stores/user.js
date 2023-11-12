@@ -4,6 +4,7 @@ export const useUserStore = defineStore('user-store', {
 	state: () => ({
 		permissions: JSON.parse(localStorage.getItem('abilities')) || [],
 		user: {},
+		profile: {},
 	}),
 
 	actions: {

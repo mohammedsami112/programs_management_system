@@ -35,6 +35,17 @@
 						</span>
 					</template>
 				</div>
+				<div class="input-group">
+					<label for="max_sessions">Max Sessions</label>
+
+					<input
+						type="number"
+						min="1"
+						:disabled="loading"
+						v-model="inputs.add.max_sessions"
+						placeholder="Enter User Max Sessions"
+					/>
+				</div>
 			</div>
 			<button :disabled="loading" type="submit" class="main-button indigo w-full">
 				{{ loading ? 'Loading...' : 'Add User' }}
@@ -64,6 +75,7 @@ const inputs = reactive({
 	add: {
 		program_id: null,
 		user_id: null,
+		max_sessions: null,
 	},
 });
 const $externalResults = reactive({

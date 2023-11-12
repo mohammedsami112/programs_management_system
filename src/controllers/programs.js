@@ -71,4 +71,7 @@ export default {
 
 		return Api.post('/programs/upload-files', formData).then((response) => response.data);
 	},
+	getGeneralKeys() {
+		return Api.get('/programs/general-keys').then((response) => response.data);
+	},
 };
