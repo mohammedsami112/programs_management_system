@@ -12,7 +12,7 @@ class ProgramUsers extends Model
 
     protected $table = 'programs_users';
 
-    protected $fillable = ['program_id', 'user_id'];
+    protected $fillable = ['program_id', 'user_id', 'max_sessions'];
 
     protected $hidden = ['user_id'];
 

@@ -221,6 +221,68 @@ class usersController extends Controller
         return $this->sendResponse(null, 'User Updated Successfully',);
     }
 
+    // Update Users
+    public function updateProfile(Request $request)
+    {
+
+
+        $validate = Validator::make($request->all(), [
+            'name' => 'required',
+            'username' => 'required|unique:users,username,' . Auth::user()->id,
+            'avatar' => 'mimes:jpeg,png,jpg',
+            'email' => 'required|unique:users,email,' . Auth::user()->id,
+            'password' => 'confirmed',
+        ], [
+            // Item Id
+            'item_id.exists' => "User Doesn't Exist",
+
+
+            // Name
+            'name.required' => 'Name Is Required',
+
+            // Username
+            'username.required' => 'Username Is Required',
+            'username.unique' => 'Username Already Exists',
+
+            // Avatar
+            'avatar.mimes' => 'Avatar Type Should Be :mimes',
+
+            // Email
+            'email.required' => 'Email Is Required',
+            'email.unique' => 'Email Already Exists',
+
+            // Password
+            'password.required' => 'Password Is Required',
+
+        ]);
+
+        if ($validate->fails()) {
+            return $this->sendError('Validation Error', $validate->errors(), 400);
+        }
+
+        $user = User::find(Auth::user()->id);
+
+        // Upload Avatar
+        $avatar = $user->avatar;
+        if (isset($request->avatar)) {
+            if ($user->avatar != null) {
+                $avatar_path = public_path() . "/storage/" . $user->avatar;
+                unlink($avatar_path);
+            }
+            $avatar = $request->file('avatar')->store('users_avatar', 'public');
+        }
+
+        $user->update([
+            'name' => $request->name,
+            'username' => $request->username,
+            'avatar' => $avatar,
+            'email' => $request->email,
+            'password' => isset($request->password) ? Hash::make($request->password) : $user->password,
+        ]);
+
+        return $this->sendResponse($user, 'Profile Updated Successfully',);
+    }
+
     // Delete Users
     public function delete($userId)
     {
@@ -296,5 +358,13 @@ class usersController extends Controller
         ]);
 
         return $this->sendResponse(null, 'User Specifications Updated Successfully ');
+    }
+
+    // Get Profile
+    public function getProfile()
+    {
+        $user = User::find(Auth::user()->id);
+
+        return $this->sendResponse($user);
     }
 }

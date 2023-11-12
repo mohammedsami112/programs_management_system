@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('program_id');
             $table->unsignedBigInteger('user_id');
+            $table->integer('max_sessions')->default(1);
             $table->timestamps();
 
             $table->foreign('program_id')->references('id')->on('programs');

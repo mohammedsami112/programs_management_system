@@ -54,10 +54,12 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     // Users
     Route::group(['prefix' => 'users', 'controller' => usersController::class], function () {
         Route::get('/', 'getUsers');
+        Route::get('/profile', 'getProfile');
         Route::get('/form-init', 'usersFilters');
         Route::get('/users-list', 'getUsersList');
         Route::post('create', 'create');
         Route::post('update', 'update');
+        Route::post('/update/profile', 'updateProfile');
         Route::post('specification', 'addSpecification');
         Route::post('/delete/{userId}', 'delete');
         Route::post('/force_delete/{userId}', 'forceDelete');
@@ -68,6 +70,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     // Programs
     Route::group(['prefix' => 'programs', 'controller' => programsController::class], function () {
         Route::get('/', 'getPrograms');
+        Route::get('/general-keys', 'getGeneralKeys');
         Route::get('/users-list', 'usersList');
         Route::post('create', 'create');
         Route::post('update', 'update');
@@ -81,7 +84,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('/force_delete/{programId}', 'forceDelete');
         Route::post('/restore/{programId}', 'restore');
         Route::group(['prefix' => 'auth',  'controller' => outAuthController::class], function () {
-            Route::post('login', 'login')->withoutMiddleware('auth:sanctum');
+            Route::post('login-program', 'login');
+            Route::post('general-login', 'generalLogin')->withoutMiddleware('auth:sanctum');
             Route::post('logout', 'logout');
         });
     });

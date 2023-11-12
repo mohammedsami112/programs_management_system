@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\General;
 use App\Models\Program;
 use App\Models\ProgramFile;
 use App\Models\ProgramUsers;
@@ -184,7 +185,7 @@ class programsController extends Controller
 
         $validate = Validator::make($request->all(), [
             'program_id' => 'required|exists:programs,id',
-            'user_id' => 'required|exists:users,id'
+            'user_id' => 'required|exists:users,id',
         ]);
 
         if ($validate->fails()) {
@@ -199,7 +200,8 @@ class programsController extends Controller
 
         ProgramUsers::create([
             'program_id' => $request->program_id,
-            'user_id' => $request->user_id
+            'user_id' => $request->user_id,
+            'max_sessions' => $request->max_sessions
         ]);
 
         return $this->sendResponse(null, 'User Added To Program Successfully');
@@ -299,5 +301,17 @@ class programsController extends Controller
 
 
         return $this->sendResponse(null, 'Files Uploaded & Store Successfully');
+    }
+
+    // Get General Keys
+    public function getGeneralKeys()
+    {
+        if (!$this->permission('programs_general_keys')) {
+            abort(403);
+        }
+
+        $generalKeys = General::first();
+
+        return $this->sendResponse($generalKeys);
     }
 }
