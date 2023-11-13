@@ -30,6 +30,7 @@
 					<label for="permissions">Permissions</label>
 
 					<MultiSelect
+						filter
 						id="permissions"
 						:disabled="loading"
 						v-model="inputs.edit.permissions"
