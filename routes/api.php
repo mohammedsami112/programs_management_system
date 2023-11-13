@@ -84,7 +84,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('/force_delete/{programId}', 'forceDelete');
         Route::post('/restore/{programId}', 'restore');
         Route::group(['prefix' => 'auth',  'controller' => outAuthController::class], function () {
-            Route::post('login-program', 'login');
+            Route::post('login-program', 'programLogin');
             Route::post('general-login', 'generalLogin')->withoutMiddleware('auth:sanctum');
             Route::post('logout', 'logout');
         });

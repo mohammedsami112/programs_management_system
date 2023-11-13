@@ -22,4 +22,9 @@ class ProgramUsers extends Model
     {
         return $this->hasOne(User::class, 'id', 'user_id');
     }
+
+    public function program()
+    {
+        return $this->hasOne(Program::class, 'id', 'program_id');
+    }
 }

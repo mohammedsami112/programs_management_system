@@ -27,7 +27,7 @@ class authController extends Controller
         $user = Auth::user();
         $programUsers = ProgramUsers::where('program_id', '=', $program->id)->where('user_id', '=', $user->id);
 
-        if ($programUsers->count != 1 && AccessTokens::where('tokenable_id', '=', $user->id)->where('program_id', '=', $program->id)->count() >= $programUsers->first()->max_sessions) {
+        if ($programUsers->count() != 1 || AccessTokens::where('tokenable_id', '=', $user->id)->where('program_id', '=', $program->id)->count() >= $programUsers->first()->max_sessions) {
             return $this->sendError('Unauthorized', base64_encode($publicKey->encrypt(json_encode(['error' => 'Username Or Password Is Invalid']))), 401);
         }
 
@@ -36,7 +36,7 @@ class authController extends Controller
         $success = [
             'token' => $user->createToken('accessToken', ['program'], $program->id)->plainTextToken,
             'user' => $user,
-            'programs' => $programFiles
+            'program_files' => $programFiles
         ];
 
         return $this->sendResponse(base64_encode($publicKey->encrypt(json_encode($success))), 'Login Successfully');
@@ -66,11 +66,13 @@ class authController extends Controller
         }
 
         $user = Auth::user();
-        $userPrograms = ProgramUsers::where('user_id', '=', $user->id)->pluck('program_id')->toArray();
+        $userPrograms = ProgramUsers::where('user_id', '=', $user->id)->without('user')->with(['program' => function ($query) {
+            $query->select(['id', 'title', 'api_token']);
+        }])->get();
 
         $success = [
             'token' => $user->createToken('accessToken', ['generalPrograms'])->plainTextToken,
-            'programs' => Program::whereIn('id', $userPrograms)->get()
+            'programs' => $userPrograms
         ];
 
         return $this->sendResponse(base64_encode($publicKey->encrypt(json_encode($success))), 'Login Successfully');
