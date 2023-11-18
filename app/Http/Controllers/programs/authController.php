@@ -8,6 +8,8 @@ use App\Models\General;
 use App\Models\Program;
 use App\Models\ProgramFile;
 use App\Models\ProgramUsers;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -19,16 +21,12 @@ class authController extends Controller
     public function programLogin(Request $request)
     {
         $program = Program::where('api_token', '=', $request->header('api_token'))->first();
-        $privateKey = PrivateKey::fromString($program->private_key);
-        $publicKey = PublicKey::fromString($program->public_key);
-        //$data = json_decode($privateKey->decrypt(base64_decode($request->data)), true);
-
 
         $user = Auth::user();
         $programUsers = ProgramUsers::where('program_id', '=', $program->id)->where('user_id', '=', $user->id);
 
         if ($programUsers->count() != 1 || AccessTokens::where('tokenable_id', '=', $user->id)->where('program_id', '=', $program->id)->count() >= $programUsers->first()->max_sessions) {
-            return $this->sendError('Unauthorized', base64_encode($publicKey->encrypt(json_encode(['error' => 'Username Or Password Is Invalid']))), 401);
+            return $this->sendError('Unauthorized', JWT::encode(['error' => 'Username Or Password Is Invalid'], $program->private_key, 'RS256'), 401);
         }
 
         $programFiles = ProgramFile::where('program_id', '=', $program->id)->get();
@@ -39,16 +37,17 @@ class authController extends Controller
             'program_files' => $programFiles
         ];
 
-        return $this->sendResponse(base64_encode($publicKey->encrypt(json_encode($success))), 'Login Successfully');
+        return $this->sendResponse(JWT::encode($success, $program->private_key, 'RS256'), 'Login Successfully');
+        // return $this->sendResponse($success);
     }
 
     public function generalLogin(Request $request)
     {
         $generalKeys = General::first();
-        $privateKey = PrivateKey::fromString($generalKeys->private_key);
-        $publicKey = PublicKey::fromString($generalKeys->public_key);
 
-        $data = json_decode($privateKey->decrypt(base64_decode($request->data)), true);
+
+        $data = collect(JWT::decode($request->data, new Key($generalKeys->public_key, 'RS256')))->toArray();
+
         $validate = Validator::make($data, [
             'username' => 'required',
             'password' => 'required'
@@ -58,11 +57,11 @@ class authController extends Controller
         ]);
 
         if ($validate->fails()) {
-            return $this->sendError('Validation Error', base64_encode($publicKey->encrypt($validate->errors())), 400);
+            return $this->sendError('Validation Error', JWT::encode(collect($validate->errors())->toArray(), $generalKeys->private_key, 'RS256'), 400);
         }
 
         if (!Auth::attempt(['username' => $data['username'], 'password' => $data['password']])) {
-            return $this->sendError('Unauthorized', base64_encode($publicKey->encrypt(json_encode(['error' => 'Username Or Password Is Invalid']))), 401);
+            return $this->sendError('Unauthorized',  JWT::encode(['error' => 'Username Or Password Is Invalid'], $generalKeys->private_key, 'RS256'), 401);
         }
 
         $user = Auth::user();
@@ -75,7 +74,9 @@ class authController extends Controller
             'programs' => $userPrograms
         ];
 
-        return $this->sendResponse(base64_encode($publicKey->encrypt(json_encode($success))), 'Login Successfully');
+        $jwt = JWT::encode($success, $generalKeys->private_key, 'RS256');
+
+        return $this->sendResponse($jwt);
     }
 
     public function logout()
