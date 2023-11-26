@@ -92,6 +92,11 @@
 			<h2 class="text-2xl font-bold text-slate-600 mb-8 mt-8">General Keys</h2>
 
 			<div class="input-group">
+				<label for="private_key">JWT Signature</label>
+				<input readonly :disabled="loading" v-model="keys.jwt" name="jwt_signature" id="jwt_signature" />
+			</div>
+
+			<div class="input-group">
 				<label for="private_key">Private Key</label>
 				<textarea
 					readonly
@@ -136,13 +141,14 @@ const toast = useToast();
 
 const getGeneralKeys = () => {
 	programsApi.getGeneralKeys().then((response) => {
-		console.log(response);
 		keys.private = response.data.private_key;
 		keys.public = response.data.public_key;
+		keys.jwt = response.data.jwt_signature;
 	});
 };
 
 const keys = reactive({
+	jwt: null,
 	public: null,
 	private: null,
 });
