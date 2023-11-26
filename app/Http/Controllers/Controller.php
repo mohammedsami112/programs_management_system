@@ -4,10 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Permission;
 use App\Models\User;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Crypto\Rsa\PrivateKey;
+use Spatie\Crypto\Rsa\PublicKey;
 
 class Controller extends BaseController
 {
@@ -62,5 +66,33 @@ class Controller extends BaseController
         }
 
         return explode('+', $searchSpecifications[1]);
+    }
+
+    public function dataEncryption($data, $keys)
+    {
+        $privateKey = PrivateKey::fromString($keys['private_key']);
+        $publicKey = PublicKey::fromString($keys['public_key']);
+        $signature = $keys['jwt_signature'];
+
+        $jwtDataArray = str_split(JWT::encode($data, $signature, 'HS256'), 200);
+        $jwtData = [];
+
+        foreach ($jwtDataArray as $jwt) {
+            $jwtData[] = base64_encode($publicKey->encrypt($jwt));
+        }
+        return $jwtData;
+    }
+
+    public function dataDecryption($data, $keys)
+    {
+
+        $privateKey = PrivateKey::fromString($keys['private_key']);
+        $publicKey = PublicKey::fromString($keys['public_key']);
+        $signature = $keys['jwt_signature'];
+
+
+        $rsaData = $privateKey->decrypt(base64_decode($data));
+
+        return JWT::decode($rsaData, new Key($signature, 'HS256'));
     }
 }

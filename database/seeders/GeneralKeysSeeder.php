@@ -18,7 +18,8 @@ class GeneralKeysSeeder extends Seeder
 
         General::create([
             'private_key' => $privateKey,
-            'public_key' => $publicKey
+            'public_key' => $publicKey,
+            'jwt_signature' => md5(rand(0, 1000000000000))
         ]);
     }
 }

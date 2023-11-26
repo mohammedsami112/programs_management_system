@@ -21,12 +21,17 @@ class authController extends Controller
     public function programLogin(Request $request)
     {
         $program = Program::where('api_token', '=', $request->header('api_token'))->first();
+        $programsKeys = [
+            'public_key' => $program->public_key,
+            'private_key' => $program->private_key,
+            'jwt_signature' => $program->api_token,
+        ];
 
         $user = Auth::user();
         $programUsers = ProgramUsers::where('program_id', '=', $program->id)->where('user_id', '=', $user->id);
 
         if ($programUsers->count() != 1 || AccessTokens::where('tokenable_id', '=', $user->id)->where('program_id', '=', $program->id)->count() >= $programUsers->first()->max_sessions) {
-            return $this->sendError('Unauthorized', JWT::encode(['error' => 'Username Or Password Is Invalid'], $program->private_key, 'RS256'), 401);
+            return $this->sendError('Unauthorized', $this->dataEncryption(['error' => 'Username Or Password Is Invalid'], $programsKeys), 401);
         }
 
         $programFiles = ProgramFile::where('program_id', '=', $program->id)->get();
@@ -37,16 +42,14 @@ class authController extends Controller
             'program_files' => $programFiles
         ];
 
-        return $this->sendResponse(JWT::encode($success, $program->private_key, 'RS256'), 'Login Successfully');
-        // return $this->sendResponse($success);
+        return $this->sendResponse($this->dataEncryption($success, $programsKeys), 'Login Successfully');
     }
 
     public function generalLogin(Request $request)
     {
         $generalKeys = General::first();
 
-
-        $data = collect(JWT::decode($request->data, new Key($generalKeys->public_key, 'RS256')))->toArray();
+        $data = collect($this->dataDecryption($request->data, $generalKeys))->toArray();
 
         $validate = Validator::make($data, [
             'username' => 'required',
@@ -74,9 +77,7 @@ class authController extends Controller
             'programs' => $userPrograms
         ];
 
-        $jwt = JWT::encode($success, $generalKeys->private_key, 'RS256');
-
-        return $this->sendResponse($jwt);
+        return $this->sendResponse($this->dataEncryption($success, $generalKeys));
     }
 
     public function logout()
