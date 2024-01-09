@@ -42,7 +42,7 @@ class logController extends Controller
                 $q->where('programs.creator', '=', Auth::user()->id);
             });
         })->when($this->specification('specific_logs_users'), function ($query, $data) {
-            $query->whereIn('user_id', $data);
+            $query->orWhereIn('user_id', $data);
         })->paginate($request->limit ? $request->limit : 10);
 
         return $this->sendResponse($logs);

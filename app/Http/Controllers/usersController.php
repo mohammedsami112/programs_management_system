@@ -53,7 +53,7 @@ class usersController extends Controller
         })->when($this->permission('users_his_users'), function ($query) {
             $query->where('leader', '=', Auth::user()->id);
         })->when($this->specification('specific_users'), function ($query, $data) {
-            $query->whereIn('id', $data);
+            $query->orWhereIn('id', $data);
         })->paginate($request->limit ? $request->limit : 10);
 
         // $users = User::all();
